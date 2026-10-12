@@ -35,6 +35,7 @@ classDiagram
         after
         before
         interactive
+        status
     }
     class Challenge {
         ask
@@ -44,6 +45,8 @@ classDiagram
         hints
         done
         before
+        status
+        target
     }
     Card "1" --> "0..*" FileSpec : 練習用のファイル
     Card "1" --> "1..*" Step : 試し打ち
