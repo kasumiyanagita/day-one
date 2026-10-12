@@ -3,6 +3,7 @@
 import fcntl
 import os
 import pty
+import re
 import select
 import struct
 import sys
@@ -44,7 +45,10 @@ def run_app(tmp_path, steps, rows=24, columns=80, first_time=False):
 
     read_until_quiet(quiet=1.5)
     for keys in steps:
-        os.write(fd, keys.encode())
+        if isinstance(keys, tuple):  # (行数, 桁数): 端末の大きさを変える
+            fcntl.ioctl(fd, termios.TIOCSWINSZ, struct.pack("HHHH", *keys, 0, 0))
+        else:
+            os.write(fd, keys.encode())
         read_until_quiet()
     # 最後の入力で終了するはずなので、終わるまで少し待つ
     deadline = time.time() + 10
@@ -145,3 +149,12 @@ def test_exit_in_the_tutorial_quits_and_does_not_show_it_again(tmp_path):
     screen, code = run_app(tmp_path, ["exit\r"])
     assert "チュートリアル" not in screen.replace("tutorial", "") or "チュートリアル 1/4" not in screen
     assert "コマンド一覧" in screen and code == 0
+
+
+def test_top_page_is_redrawn_when_the_terminal_is_resized(tmp_path):
+    screen, code = run_app(tmp_path, [(40, 120), "\x1b[C", (24, 80), "exit\r"], rows=24, columns=80)
+    assert "Traceback" not in screen
+    # 小さい画面では 4 ページ。広げると描き直されて 2 ページになり、→ で 2 ページ目へ。
+    # 元の大きさに戻すと、また描き直されて 4 ページの表示になる(見ていたページは保つ)
+    assert re.findall(r"ページ \d/\d", screen) == ["ページ 1/4", "ページ 1/2", "ページ 2/2", "ページ 2/4"]
+    assert "おつかれさまでした" in screen and code == 0

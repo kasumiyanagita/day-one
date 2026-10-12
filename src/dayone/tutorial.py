@@ -12,7 +12,7 @@ from rich.text import Text
 
 from dayone import design, sandbox
 from dayone.prose import MAX_WIDTH, PANEL_CHROME, render_prose
-from dayone.screen import Screen
+from dayone.screen import RESIZED, Screen
 
 WORD = "tutorial"  # トップページで打つと、チュートリアルを開く言葉
 NEXT, PREVIOUS = "next", "previous"
@@ -125,7 +125,13 @@ def run(screen: Screen, console: Console, mode: str) -> bool:
             "[d.key]title[/] トップページに戻る",
             "[d.key]exit[/] 終了",
         )
-        answer = screen.read_line(shortcuts=KEYS, placeholder="Enter で次へ" if not last else "Enter でトップページへ")
+        answer = screen.read_line(
+            shortcuts=KEYS,
+            placeholder="Enter で次へ" if not last else "Enter でトップページへ",
+            redraw_on_resize=True,
+        )
+        if answer == RESIZED:  # 端末の大きさが変わった。同じページを、新しい大きさで描き直す
+            continue
         answer = None if answer is None else answer.strip().lower()
         if answer is None or answer == "exit":
             return False

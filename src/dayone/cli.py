@@ -21,7 +21,7 @@ from dayone.card import Card, load_cards
 from dayone.lesson import Lesson
 from dayone.links import load_links
 from dayone.progress import MAX_LEVEL, Progress, Recorded, default_path, today
-from dayone.screen import Screen
+from dayone.screen import RESIZED, Screen
 
 MODE_LABELS = {
     sandbox.ISOLATED: "[d.mode.isolated]隔離モード[/]で実行中",
@@ -33,6 +33,7 @@ MENU = "menu"
 NEXT_PAGE = "next-page"
 PREVIOUS_PAGE = "previous-page"
 TUTORIAL = "tutorial"
+REDRAW = "redraw"  # 端末の大きさが変わったので、一覧を新しい大きさで描き直す
 
 FRAME_ROWS = 2  # 一覧を囲む枠の、上下の線
 FRAME_COLUMNS = 4  # 一覧を囲む枠の、左右の線と余白
@@ -284,11 +285,18 @@ def _show_menu(
 
 
 def _ask(
-    screen: Screen, *choices: str, shortcuts: dict[str, str] | None = None, placeholder: str = ""
+    screen: Screen,
+    *choices: str,
+    shortcuts: dict[str, str] | None = None,
+    placeholder: str = "",
+    redraw_on_resize: bool = False,
 ) -> str | None:
-    """選べる操作を入力欄の上に出して、入力欄から 1 行読む。Ctrl-D や Ctrl-C なら None。"""
+    """選べる操作を入力欄の上に出して、入力欄から 1 行読む。Ctrl-D や Ctrl-C なら None。
+
+    redraw_on_resize が True なら、端末の大きさが変わったときに RESIZED を返す。
+    """
     screen.set_status(*choices)
-    answer = screen.read_line(shortcuts=shortcuts, placeholder=placeholder)
+    answer = screen.read_line(shortcuts=shortcuts, placeholder=placeholder, redraw_on_resize=redraw_on_resize)
     return None if answer is None else answer.strip().lower()
 
 
@@ -336,7 +344,10 @@ def _choose(
             "[d.key]exit[/d.key] 終了",
             shortcuts=PAGE_KEYS if paged else None,
             placeholder=MENU_PLACEHOLDER,
+            redraw_on_resize=True,
         )
+        if answer == RESIZED:
+            return REDRAW
         if answer is None or answer == "exit":
             return None
         if answer == tutorial.WORD:
@@ -489,6 +500,8 @@ def main(argv: list[str] | None = None) -> int:
                 if not tutorial.run(screen, console, mode):
                     console.print("おつかれさまでした。")
                     return 0
+                continue
+            if plan == REDRAW:
                 continue
             if isinstance(plan, str):  # カードを選ばず、ページを送る
                 page += 1 if plan == NEXT_PAGE else -1
