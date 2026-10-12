@@ -1,0 +1,46 @@
+command = "mv"
+category = "作る・動かす・消す"
+title = "ファイルを移動する、名前を変える"
+summary = "ファイルを別の場所へ移します。同じ場所の中で使うと、名前の変更になります。"
+when = "ファイルを整理して別のディレクトリへ入れたいとき。ファイルの名前を付け直したいとき。"
+syntax = "mv 移動元 移動先"
+dirs = ["archive", "documents"]
+
+[vars]
+file = ["january.txt", "february.txt", "march.txt"]
+
+[[files]]
+path = "draft.txt"
+content = "企画書の下書き\n"
+
+[[files]]
+path = "january.txt"
+content = "1 月の記録\n"
+
+[[files]]
+path = "february.txt"
+content = "2 月の記録\n"
+
+[[files]]
+path = "march.txt"
+content = "3 月の記録\n"
+
+[[try]]
+say = "まずは名前の変更です。`mv draft.txt final.txt` と打ってみましょう。"
+run = "mv draft.txt final.txt"
+after = "`draft.txt` が `final.txt` という名前になりました。`cp` と違って、元の名前のファイルは残りません。"
+
+[[try]]
+say = "次は移動です。移動先にディレクトリを指定します。`mv final.txt documents` と打ってみましょう。"
+run = "mv final.txt documents"
+after = "`final.txt` が `documents` の中へ移りました。`ls documents` で確かめられます。"
+
+[challenge]
+ask = "`{{file}}` を、`archive` ディレクトリの中へ移動してください。"
+solution = "mv {{file}} archive/"
+check = "files"
+hints = [
+    "移動先にディレクトリの名前を書くと、その中へ同じ名前のまま移動します。",
+    "`mv {{file}} archive/` と打ちます。",
+]
+done = "`mv` は move の略です。「名前を変える」と「移動する」が同じコマンドなのは、どちらも「ファイルの置き場所の書き換え」だからです。"

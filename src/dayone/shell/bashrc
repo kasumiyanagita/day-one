@@ -1,0 +1,51 @@
+# day-one のカード用シェルの設定。アプリが起動時に読み込む。
+
+HISTFILE=/dev/null
+HISTCONTROL=
+shopt -s checkwinsize
+
+# プロンプトと入力中の行は、アプリが画面下の入力欄に描く。シェル自身は何も表示しない
+# (bash は行編集なしで起動され、確定した 1 行だけを受け取る)
+PS1=
+
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+export PAGER=less LESS=-R
+
+# アプリ本体は端末への出力を中継しながら、次の 3 つの目印を読み取って進行を判断する。
+# 目印は端末には表示されない制御文字列(OSC)で、アプリが取り除いてから画面に出す。
+#   開始: 利用者が打った 1 行の実行が始まる直前
+#   終了: 実行が終わり、次の行を待つ直前(終了コード・現在地・打った行・入力欄に出す現在地を添える)
+#   続き: 引用符が閉じていないなど、行の続きを待つとき
+#
+# 行を待つあいだは端末のエコーを切る(打った文字は入力欄に出ているので、二重に出さない)。
+# 実行中は戻すので、cat のように入力を読むコマンドでは打った文字がそのまま見える。
+PS0='$(stty echo 2>/dev/null)'$'\e]7770;S\a'
+PS2=$'\e]7770;C\a'
+__dayone_report() {
+    local status=$? place=
+    stty -echo 2>/dev/null
+    # 「いまどこにいるか」を自分で調べるカードでは、入力欄に場所を出さない
+    [ "$DAYONE_PROMPT" = plain ] || place=$(dirs +0)
+    printf '\e]7770;E;%s;%s;%s;%s\a' "$status" \
+        "$(printf %s "$PWD" | base64 -w0)" \
+        "$(HISTTIMEFORMAT='' history 1 | sed 's/^ *[0-9]* *//' | base64 -w0)" \
+        "$(printf %s "$place" | base64 -w0)"
+}
+PROMPT_COMMAND=__dayone_report
+
+# 打ち間違えたときに Ubuntu が出す「sudo apt update を…」という案内は、ここでは混乱のもとなので止める。
+# bash 本来の「command not found」だけが表示される
+unset -f command_not_found_handle
+
+# アプリ本体が反応する合言葉。シェルとしては何もしない。
+# どれも Linux のコマンドと重ならない名前にしてある(title はトップページに戻る)
+hint() { :; }
+card() { :; }
+title() { :; }
+
+if [ "$DAYONE_MODE" = guard ]; then
+    . "$DAYONE_RUN/guard.bash"
+fi
+
+cd "$DAYONE_WORKDIR" 2>/dev/null || cd

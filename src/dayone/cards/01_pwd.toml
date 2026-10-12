@@ -1,0 +1,34 @@
+command = "pwd"
+category = "場所と移動"
+title = "いまいる場所を表示する"
+summary = "いま作業しているディレクトリ(フォルダ)を、いちばん上の階層からの道順で表示します。"
+when = "移動を繰り返して、自分がどこにいるか分からなくなったとき。ファイルを作ったり消したりする前に、場所を確かめたいとき。"
+syntax = "pwd"
+# 場所を自分で調べるカードなので、プロンプトには現在地を出さない
+prompt = "plain"
+dirs = [
+    "documents/reports",
+    "documents/letters",
+    "projects/website",
+    "projects/notes",
+    "pictures/trip",
+    "music",
+]
+
+[vars]
+place = ["documents/reports", "documents/letters", "projects/website", "projects/notes", "pictures/trip"]
+
+[[try]]
+say = "ターミナルでは、いつも「どこかのディレクトリの中」にいます。`pwd` と打って Enter を押し、いまいる場所を確かめましょう。"
+run = "pwd"
+after = "`/` で区切られた道順(パス)が表示されました。ここは、あなた専用の作業場所である「ホームディレクトリ」です。"
+
+[challenge]
+before = "cd ~/{{place}}"
+ask = "いま、あなたを別のディレクトリへこっそり移動させました。どこにいるのか、表示して確かめてください。"
+solution = "pwd"
+hints = [
+    "ここで覚えたコマンドを、そのまま打つだけです。",
+    "`pwd` と打って Enter を押します。",
+]
+done = "`pwd` は print working directory(作業中のディレクトリを表示)の略です。迷ったらまず `pwd`、と覚えておくと安心です。"

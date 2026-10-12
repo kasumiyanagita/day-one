@@ -1,0 +1,73 @@
+command = "ls"
+category = "場所と移動"
+title = "ファイルの一覧を表示する"
+summary = "ディレクトリの中にあるファイルやディレクトリの名前を一覧にします。"
+when = "いまいる場所に何があるか見たいとき。ファイルの名前を正確に思い出せないとき。大きさや更新日時を確かめたいとき。"
+syntax = "ls [オプション] [ディレクトリ]"
+dirs = ["pictures"]
+
+[vars]
+dir = ["documents", "music", "pictures"]
+
+[[files]]
+path = "memo.txt"
+content = "牛乳を買う\n"
+
+[[files]]
+path = "todo.txt"
+content = "1. 部屋の掃除\n2. 図書館に本を返す\n"
+
+[[files]]
+path = ".settings"
+content = "theme=dark\n"
+
+[[files]]
+path = "documents/report.txt"
+content = "月次レポート\n"
+
+[[files]]
+path = "documents/letter.txt"
+content = "拝啓\n"
+
+[[files]]
+path = "documents/budget.csv"
+content = "item,price\n"
+
+[[files]]
+path = "music/morning.mp3"
+
+[[files]]
+path = "music/rain.mp3"
+
+[[files]]
+path = "pictures/cat.jpg"
+
+[[files]]
+path = "pictures/sea.jpg"
+
+[[files]]
+path = "pictures/trip/station.jpg"
+
+[[try]]
+say = "`ls` と打って、いまいる場所に何があるか見てみましょう。"
+run = "ls"
+after = "名前の一覧が出ました。色が付いているものはディレクトリで、中にさらにファイルを入れられます。"
+
+[[try]]
+say = "名前だけでなく詳しい情報も見られます。`ls -l` と打ってみましょう。`-l` のように `-` で始まるものを「オプション」と呼び、コマンドの動きを切り替えます。"
+run = "ls -l"
+after = "1 行に 1 つずつ、権限・持ち主・大きさ・更新日時・名前の順に表示されました。行の先頭が `d` のものはディレクトリです。"
+
+[[try]]
+say = "名前が `.` で始まるファイルは、ふだんは一覧に出ません。`ls -a` と打つと、隠れているものも表示できます。"
+run = "ls -a"
+after = "`.settings` が現れました。設定ファイルなどは、こうして邪魔にならないよう隠されています。`.` はいまいる場所、`..` は 1 つ上の階層を表します。"
+
+[challenge]
+ask = "`{{dir}}` ディレクトリの中に何が入っているか、一覧を表示してください。"
+solution = "ls {{dir}}"
+hints = [
+    "`ls` のあとに空白をあけてディレクトリの名前を書くと、その中身を表示できます。",
+    "`ls {{dir}}` と打ちます。",
+]
+done = "`ls` は list の略です。移動した先でまず `ls` を打って、何があるか確かめるのが習慣になります。"

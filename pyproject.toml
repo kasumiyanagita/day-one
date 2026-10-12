@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dayone"
+version = "0.1.0"
+description = "コマンドを 1 つずつ、実際に打って覚えるターミナルアプリ"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["rich>=13"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+dayone = "dayone.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/dayone"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

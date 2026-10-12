@@ -1,0 +1,33 @@
+command = "head"
+category = "中身を見る"
+title = "ファイルの先頭だけを表示する"
+summary = "ファイルの最初の数行だけを表示します。何も指定しなければ 10 行です。"
+when = "大きなファイルがどんな形をしているか、少しだけ見て確かめたいとき。順位表やランキングの上位だけを見たいとき。"
+syntax = "head [-n 行数] ファイル"
+
+[vars]
+n = ["2", "4", "5", "7"]
+
+[[files]]
+path = "ranking.txt"
+lines = 24
+line = "{n} 位  ゼッケン {n}0{n} 番"
+
+[[try]]
+say = "`ranking.txt` は 24 行あります。`head ranking.txt` と打って、先頭だけを見てみましょう。"
+run = "head ranking.txt"
+after = "最初の 10 行だけが表示されました。全部を流さずに、どんなファイルかを確かめられます。"
+
+[[try]]
+say = "行数は `-n` で指定できます。`head -n 3 ranking.txt` と打ってみましょう。"
+run = "head -n 3 ranking.txt"
+after = "先頭の 3 行だけになりました。"
+
+[challenge]
+ask = "`ranking.txt` の上位 {{n}} 人(先頭の {{n}} 行)を表示してください。"
+solution = "head -n {{n}} ranking.txt"
+hints = [
+    "`-n` のあとに、表示したい行数を書きます。",
+    "`head -n {{n}} ranking.txt` と打ちます。",
+]
+done = "何万行もあるログでも、`head` なら一瞬で先頭を確かめられます。中身を知らないファイルは、`cat` で全部流す前にまず `head` で覗くのが安全です。"

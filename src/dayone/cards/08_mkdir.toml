@@ -1,0 +1,38 @@
+command = "mkdir"
+category = "作る・動かす・消す"
+title = "ディレクトリを作る"
+summary = "新しいディレクトリ(フォルダ)を作ります。"
+when = "ファイルを種類や用件ごとに整理したいとき。新しい作業を始めるための場所を用意するとき。"
+syntax = "mkdir [-p] ディレクトリ"
+
+[vars]
+name = ["music", "videos", "backup", "downloads"]
+
+[[files]]
+path = "memo.txt"
+content = "牛乳を買う\n"
+
+[[try]]
+say = "`mkdir photos` と打って、photos という名前のディレクトリを作ってみましょう。"
+run = "mkdir photos"
+after = "何も表示されませんが、これで成功です。多くのコマンドは、うまくいったときは黙っています。"
+
+[[try]]
+say = "`ls` で、本当にできたか確かめましょう。"
+run = "ls"
+after = "`photos` が増えています。"
+
+[[try]]
+say = "深い階層を一度に作るには `-p` を付けます。`mkdir -p work/2026/october` と打ってみましょう。"
+run = "mkdir -p work/2026/october"
+after = "`work`、その中の `2026`、さらにその中の `october` が一度にできました。`-p` がないと、途中のディレクトリがないと言われて失敗します。"
+
+[challenge]
+ask = "`{{name}}` という名前のディレクトリを作ってください。"
+solution = "mkdir {{name}}"
+check = "files"
+hints = [
+    "`mkdir` のあとに、作りたいディレクトリの名前を書きます。",
+    "`mkdir {{name}}` と打ちます。",
+]
+done = "`mkdir` は make directory の略です。作ったら `cd` で中に入り、そこで作業を始めます。"

@@ -1,0 +1,56 @@
+command = "cat"
+category = "中身を見る"
+title = "ファイルの中身を表示する"
+summary = "ファイルの中身を、最初から最後までそのまま画面に出します。"
+when = "短いファイルの中身をさっと確かめたいとき。いくつかのファイルを続けて表示したいとき。"
+syntax = "cat [オプション] ファイル..."
+
+[vars]
+order = [
+    "morning.txt night.txt",
+    "night.txt morning.txt",
+    "noon.txt night.txt",
+    "night.txt noon.txt",
+    "morning.txt noon.txt",
+    "noon.txt morning.txt",
+]
+
+[[files]]
+path = "memo.txt"
+content = """
+買うものリスト
+- 牛乳
+- たまご
+- 食パン
+"""
+
+[[files]]
+path = "morning.txt"
+content = "朝: コーヒーをいれる\n"
+
+[[files]]
+path = "noon.txt"
+content = "昼: 公園を散歩する\n"
+
+[[files]]
+path = "night.txt"
+content = "夜: 本を読む\n"
+
+[[try]]
+say = "`cat memo.txt` と打って、メモの中身を見てみましょう。`cat` のあとに、見たいファイルの名前を書きます。"
+run = "cat memo.txt"
+after = "ファイルの中身がそのまま表示されました。エディタを開かなくても、中身を確かめられます。"
+
+[[try]]
+say = "オプションを付けると表示が変わります。`cat -n memo.txt` と打ってみましょう。"
+run = "cat -n memo.txt"
+after = "行の先頭に番号が付きました。「3 行目を見て」のように、場所を伝えたいときに便利です。"
+
+[challenge]
+ask = "`cat` は、ファイルの名前をいくつか並べると、その順番でつなげて表示します。次の 2 つのファイルを、この順番でつなげて表示してください: `{{order}}`"
+solution = "cat {{order}}"
+hints = [
+    "ファイルの名前を、空白で区切って 2 つ並べます。",
+    "`cat {{order}}` と打ちます。",
+]
+done = "`cat` は concatenate(つなげる)の略で、もともとは複数のファイルをつなげるためのコマンドです。長いファイルは画面を流れていってしまうので、そのときは、あとで覚える `less` や `head` を使います。"

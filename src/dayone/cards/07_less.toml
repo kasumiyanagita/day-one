@@ -1,0 +1,39 @@
+command = "less"
+category = "中身を見る"
+title = "長いファイルを 1 画面ずつ読む"
+summary = "ファイルを画面に収まる分だけ表示し、キー操作で前後に移動しながら読めるようにします。"
+when = "`cat` では流れていってしまう長いファイルを、落ち着いて読みたいとき。中から言葉を探したいとき。"
+syntax = "less ファイル"
+
+[vars]
+file = ["diary.txt", "minutes.txt", "manual.txt"]
+
+[[files]]
+path = "diary.txt"
+lines = 120
+line = "{n} 日目: 今日は晴れ。散歩に出かけて、帰りにパンを買った。"
+
+[[files]]
+path = "minutes.txt"
+lines = 90
+line = "議題 {n}: 次回までに担当者が確認する。"
+
+[[files]]
+path = "manual.txt"
+lines = 150
+line = "手順 {n}: 電源を入れる前に、ケーブルの接続を確かめる。"
+
+[[try]]
+say = "`less diary.txt` と打つと、ファイルの最初の 1 画面分が表示されます。**Space** で次の画面へ、**b** で前の画面へ移動できます。少し眺めたら、**q** を押して終了してください。"
+run = "less diary.txt"
+after = "`q` で終了すると、元の画面に戻ります。`less` の中では `/` に続けて言葉を打つと検索もできます(`/50 日目` のあとに Enter)。"
+
+[challenge]
+ask = "`{{file}}` を `less` で開き、中を少し読んでから `q` で閉じてください。"
+solution = "less {{file}}"
+check = "command"
+hints = [
+    "`less` のあとに、開きたいファイルの名前を書きます。閉じるときは `q` です。",
+    "`less {{file}}` と打ち、読み終えたら `q` を押します。",
+]
+done = "`less` の操作(Space、b、/、q)は、このあと覚える `man` でもそのまま使えます。「画面が切り替わって戻れなくなったら、まず q」と覚えておくと安心です。"

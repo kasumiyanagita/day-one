@@ -1,0 +1,57 @@
+command = "rm"
+category = "作る・動かす・消す"
+title = "ファイルを削除する"
+summary = "ファイルを削除します。ごみ箱には入らず、その場で消えます。"
+when = "いらなくなったファイルを片付けるとき。消す前に、名前と場所をよく確かめてから使います。"
+syntax = "rm [-r] ファイル..."
+
+[vars]
+file = ["cache-a.tmp", "cache-b.tmp", "cache-c.tmp"]
+
+[[files]]
+path = "old.txt"
+content = "もういらないメモ\n"
+
+[[files]]
+path = "letter.txt"
+content = "大事な手紙\n"
+
+[[files]]
+path = "cache-a.tmp"
+content = "一時ファイル A\n"
+
+[[files]]
+path = "cache-b.tmp"
+content = "一時ファイル B\n"
+
+[[files]]
+path = "cache-c.tmp"
+content = "一時ファイル C\n"
+
+[[files]]
+path = "trash/scrap-1.txt"
+content = "書き損じ\n"
+
+[[files]]
+path = "trash/scrap-2.txt"
+content = "書き損じ\n"
+
+[[try]]
+say = "`rm old.txt` と打って、old.txt を削除してみましょう。ここは練習用の場所なので、消しても大丈夫です。"
+run = "rm old.txt"
+after = "確認もなく、すぐに消えました。`rm` で消したファイルは元に戻せません。"
+
+[[try]]
+say = "ディレクトリを中身ごと消すには `-r` を付けます。`rm -r trash` と打ってみましょう。"
+run = "rm -r trash"
+after = "`trash` と、その中のファイルがすべて消えました。`-r` は強力なので、対象の名前を打ち間違えていないか、Enter の前に必ず見直します。"
+
+[challenge]
+ask = "`{{file}}` だけを削除してください。ほかのファイルは残しておきます。"
+solution = "rm {{file}}"
+check = "files"
+hints = [
+    "`rm` のあとに、消したいファイルの名前を 1 つだけ書きます。",
+    "`rm {{file}}` と打ちます。",
+]
+done = "`rm` は remove の略です。消す前に `ls` で対象を確かめる、という一手間が事故を防ぎます。`rm -i` とすると、1 つずつ「消してよいか」を尋ねてくれます。"

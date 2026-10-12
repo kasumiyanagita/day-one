@@ -1,0 +1,35 @@
+command = "|"
+category = "出力とつなぎ方"
+title = "コマンドをつなげる"
+summary = "左のコマンドの出力を、右のコマンドの入力として渡します。この記号を「パイプ」と呼びます。"
+when = "出力が長すぎるので一部だけ見たいとき。1 つのコマンドではできないことを、小さなコマンドの組み合わせで実現したいとき。"
+syntax = "コマンド | コマンド"
+
+[vars]
+a = ["5", "6", "8"]
+b = ["2", "3"]
+
+[[files]]
+path = "ranking.txt"
+lines = 20
+line = "{n} 位  ゼッケン {n}0{n} 番"
+
+[[try]]
+say = "`ls -l /usr/bin` は、このコンピューターに入っているコマンドの一覧で、とても長くなります。`ls -l /usr/bin | head -n 5` と打って、先頭の 5 行だけを見てみましょう。"
+run = "ls -l /usr/bin | head -n 5"
+after = "`ls` の出力が画面ではなく `head` に渡され、`head` が先頭の 5 行だけを表示しました。"
+
+[[try]]
+say = "ファイルの中身を渡すこともできます。`cat ranking.txt | tail -n 3` と打ってみましょう。"
+run = "cat ranking.txt | tail -n 3"
+after = "`cat` が出した 20 行のうち、`tail` が最後の 3 行だけを表示しました。"
+
+[challenge]
+ask = "`ranking.txt` の先頭 {{a}} 行を取り出し、そのうち最後の {{b}} 行だけを表示してください。`head` の出力を `tail` に渡します。"
+solution = "head -n {{a}} ranking.txt | tail -n {{b}}"
+uses = ["head", "tail"]
+hints = [
+    "まず `head -n {{a}} ranking.txt` で先頭 {{a}} 行を出し、その後ろに `|` を書いて `tail` をつなげます。",
+    "`head -n {{a}} ranking.txt | tail -n {{b}}` と打ちます。",
+]
+done = "パイプは何段でもつなげられます。「小さな道具を組み合わせて、やりたいことを作る」のがコマンドラインの考え方で、ログの調査ではこの形を何度も使います。"

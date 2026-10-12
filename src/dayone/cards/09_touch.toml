@@ -1,0 +1,33 @@
+command = "touch"
+category = "作る・動かす・消す"
+title = "空のファイルを作る"
+summary = "指定した名前の、中身が空のファイルを作ります。すでにあるファイルに使うと、更新日時だけが今に変わります。"
+when = "あとで中身を書くファイルを、先に名前だけ用意しておきたいとき。"
+syntax = "touch ファイル..."
+
+[vars]
+name = ["todo", "diary", "notes", "ideas"]
+
+[[files]]
+path = "readme.txt"
+content = "このディレクトリは練習用です。\n"
+
+[[try]]
+say = "`touch memo.txt` と打って、memo.txt という空のファイルを作ってみましょう。"
+run = "touch memo.txt"
+after = "これも成功すると何も表示されません。"
+
+[[try]]
+say = "`ls -l` で確かめましょう。大きさの列に注目してください。"
+run = "ls -l"
+after = "`memo.txt` ができていて、大きさは 0 です。中身のない、名前だけのファイルです。"
+
+[challenge]
+ask = "`{{name}}.txt` という名前の空のファイルを作ってください。"
+solution = "touch {{name}}.txt"
+check = "files"
+hints = [
+    "`touch` のあとに、作りたいファイルの名前を拡張子まで書きます。",
+    "`touch {{name}}.txt` と打ちます。",
+]
+done = "`touch` は本来、ファイルの更新日時を「触って」今に変えるコマンドです。ファイルがなければ作ってくれるので、空のファイルを作る手段としてよく使われます。"

@@ -1,0 +1,37 @@
+command = "vim"
+category = "ファイルを編集する"
+title = "ファイルを開いて書き、保存する"
+summary = "ターミナルの中でファイルを編集するエディタです。開いた直後は、キーが文字ではなく命令として働きます。文字を書くときだけ、書くための状態に切り替えます。"
+when = "設定ファイルを少し書き換えたいとき。マウスの使えない画面で、ファイルを直す必要があるとき。"
+syntax = "vim ファイル"
+
+[vars]
+word = ["hello", "coffee", "sunday"]
+name = ["note", "message", "greeting"]
+
+[[files]]
+path = "memo.txt"
+content = "牛乳を買う\n"
+
+[[try]]
+say = "`vim memo.txt` と打つと、画面が切り替わってファイルの中身が表示されます。まずは何も変えずに閉じてみましょう。**:q** と打って Enter を押します。"
+run = "vim memo.txt"
+interactive = true
+after = "元の画面に戻りました。`:q` は quit(終了)です。うっかり中身を変えてしまって `:q` で閉じられないときは、**Esc** を押してから `:q!` と打つと、変更を捨てて閉じられます。"
+
+[[try]]
+say = "今度は文字を書きます。もう一度 `vim memo.txt` で開き、**i** を押してください(左下に `-- INSERT --` か `-- 挿入 --` と出ます)。好きな文字を打ったら **Esc** を押し、**:wq** と打って Enter を押します。"
+run = "vim memo.txt"
+interactive = true
+after = "`i` で文字を書ける状態に入り、`Esc` で元の状態に戻ります。`:wq` は write(保存)と quit(終了)です。`cat memo.txt` と打つと、書いた内容を確かめられます。"
+
+[challenge]
+ask = "`vim` で `{{name}}.txt` を新しく作り、`{{word}}` という 1 行だけを書いて保存してください。"
+# お手本は画面を使わない書き方にする(正解を求めるときは、キーを打つ人がいないため)
+solution = "vim -es -i NONE -c 'normal i{{word}}' -c wq {{name}}.txt"
+check = "files"
+hints = [
+    "`vim {{name}}.txt` で開き、`i` を押してから `{{word}}` と打ちます。打ち終えたら `Esc`、`:wq`、Enter の順です。",
+    "打ち間違いは Backspace で消せます。保存したあとで違いに気づいたら、もう一度 `vim {{name}}.txt` で開き、`i` を押して矢印キーと Backspace で直します。",
+]
+done = "`vim` の基本は、`i` で書く、`Esc` で戻る、`:wq` で保存して閉じる、の 3 つです。画面が切り替わって戻れなくなったら「`Esc` を押してから `:q!`」と覚えておくと安心です。"

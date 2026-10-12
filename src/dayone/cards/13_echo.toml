@@ -1,0 +1,28 @@
+command = "echo"
+category = "出力とつなぎ方"
+title = "文字を表示する"
+summary = "あとに書いた文字を、そのまま画面に表示します。"
+when = "変数の中身を確かめたいとき。ファイルに 1 行だけ書き込みたいとき(次に覚える `>` と組み合わせます)。"
+syntax = "echo 文字..."
+
+[vars]
+word = ["good-morning", "thank-you", "see-you", "well-done"]
+
+[[try]]
+say = "`echo hello` と打ってみましょう。"
+run = "echo hello"
+after = "打った文字がそのまま返ってきました。やまびこ(echo)のようなコマンドです。"
+
+[[try]]
+say = "`$` で始まる名前は「変数」で、中に値が入っています。`echo $HOME` と打って、HOME という変数の中身を見てみましょう。"
+run = "echo $HOME"
+after = "ホームディレクトリの場所が表示されました。シェルが `$HOME` を中身に置き換えてから、`echo` に渡しています。"
+
+[challenge]
+ask = "`{{word}}` と表示してください。"
+solution = "echo {{word}}"
+hints = [
+    "`echo` のあとに、表示したい文字を書きます。",
+    "`echo {{word}}` と打ちます。",
+]
+done = "単純ですが、`echo` はほかの仕組みと組み合わせると出番が増えます。次の `>` では、この出力をファイルに保存します。"

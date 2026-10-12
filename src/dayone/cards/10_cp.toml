@@ -1,0 +1,50 @@
+command = "cp"
+category = "作る・動かす・消す"
+title = "ファイルをコピーする"
+summary = "ファイルの複製を作ります。元のファイルはそのまま残ります。"
+when = "書き換える前に、元の状態を控えとして残しておきたいとき。同じ内容のファイルを別の場所にも置きたいとき。"
+syntax = "cp [-r] コピー元 コピー先"
+dirs = ["backup"]
+
+[vars]
+file = ["report.txt", "notes.txt", "budget.csv"]
+
+[[files]]
+path = "report.txt"
+content = "月次レポート\n売上は先月より増えた。\n"
+
+[[files]]
+path = "notes.txt"
+content = "打ち合わせのメモ\n- 来週までに見積もりを出す\n"
+
+[[files]]
+path = "budget.csv"
+content = "item,price\npaper,500\npen,120\n"
+
+[[files]]
+path = "album/sea.txt"
+content = "海の写真\n"
+
+[[files]]
+path = "album/mountain.txt"
+content = "山の写真\n"
+
+[[try]]
+say = "`cp report.txt report-copy.txt` と打ってみましょう。1 つ目がコピー元、2 つ目がコピー先の名前です。"
+run = "cp report.txt report-copy.txt"
+after = "同じ中身の `report-copy.txt` ができました。元の `report.txt` も残っています。"
+
+[[try]]
+say = "ディレクトリを中身ごとコピーするには `-r` を付けます。`cp -r album album-copy` と打ってみましょう。"
+run = "cp -r album album-copy"
+after = "`album` の中のファイルも含めて、丸ごと複製されました。`-r` がないと、ディレクトリはコピーできません。"
+
+[challenge]
+ask = "`{{file}}` を、`backup` ディレクトリの中にコピーしてください。"
+solution = "cp {{file}} backup/"
+check = "files"
+hints = [
+    "コピー先にディレクトリを指定すると、その中に同じ名前でコピーされます。",
+    "`cp {{file}} backup/` と打ちます。",
+]
+done = "`cp` は copy の略です。コピー先に同じ名前のファイルがあると、確認なしで上書きします。大事なファイルを扱うときは、先に `ls` でコピー先を確かめる癖を付けておくと安全です。"

@@ -1,0 +1,36 @@
+command = ">"
+category = "出力とつなぎ方"
+title = "出力をファイルに保存する"
+summary = "コマンドが画面に出すはずだった内容を、ファイルに書き込みます。`>` は上書き、`>>` は末尾への追記です。"
+when = "コマンドの結果を、あとで見返せるよう残しておきたいとき。ファイルに 1 行書き足したいとき。"
+syntax = "コマンド > ファイル"
+
+[vars]
+word = ["hello", "coffee", "sunday"]
+name = ["note", "message", "greeting"]
+
+[[try]]
+say = "`echo apple > fruits.txt` と打ってみましょう。`>` は、左のコマンドの出力を右のファイルへ流し込む記号です。"
+run = "echo apple > fruits.txt"
+after = "画面には何も出ませんでした。出力はファイルのほうへ行っています。"
+
+[[try]]
+say = "`cat fruits.txt` で、ファイルの中身を確かめましょう。"
+run = "cat fruits.txt"
+after = "`apple` と書かれたファイルができています。"
+
+[[try]]
+say = "`>` はファイルを毎回作り直します。いまの中身を残して書き足すには `>>` を使います。`echo orange >> fruits.txt` と打ってみましょう。"
+run = "echo orange >> fruits.txt"
+after = "`cat fruits.txt` で見ると、2 行になっています。ここで `>` を使うと、`apple` は消えて `orange` だけになります。"
+
+[challenge]
+ask = "`{{word}}` という 1 行だけが書かれた `{{name}}.txt` を作ってください。"
+solution = "echo {{word}} > {{name}}.txt"
+check = "files"
+uses = ["echo"]
+hints = [
+    "`echo` で表示する内容を、`>` でファイルへ流し込みます。",
+    "`echo {{word}} > {{name}}.txt` と打ちます。",
+]
+done = "`>` は `echo` 専用ではありません。`ls > list.txt` のように、どんなコマンドの出力でも保存できます。すでにあるファイルに `>` を使うと中身が消えるので、追記のつもりのときは `>>` を確かめてから Enter を押します。"

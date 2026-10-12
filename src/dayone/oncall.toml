@@ -1,0 +1,21 @@
+# 障害対応ゲーム oncall との対応。カードは id (ファイル名の番号を除いた部分) で指定する。
+
+# oncall を始める前に覚えておきたいカード
+ready = ["pwd", "ls", "cd", "cat", "head", "tail", "redirect", "pipe"]
+
+# oncall のミッションと、そこで使うカード
+[[missions]]
+title = "深夜の 500 祭り"
+cards = ["head", "pipe", "redirect"]
+
+[[missions]]
+title = "壊れたファイルを隔離せよ"
+cards = ["mv"]
+
+[[missions]]
+title = "止まらないワーカー"
+cards = ["tail"]
+
+[[missions]]
+title = "消えた注文"
+cards = ["tail", "pipe", "redirect"]

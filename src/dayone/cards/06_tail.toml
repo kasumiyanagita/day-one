@@ -1,0 +1,33 @@
+command = "tail"
+category = "中身を見る"
+title = "ファイルの末尾だけを表示する"
+summary = "ファイルの最後の数行だけを表示します。何も指定しなければ 10 行です。"
+when = "記録が下へ書き足されていくファイル(ログ)で、いちばん新しい部分を見たいとき。"
+syntax = "tail [-n 行数] ファイル"
+
+[vars]
+n = ["2", "4", "5", "6"]
+
+[[files]]
+path = "app.log"
+lines = 30
+line = "記録 {n}: 注文 #{n}7 を受け付けました"
+
+[[try]]
+say = "`app.log` には、新しい記録が下へ下へと書き足されています。`tail app.log` と打って、最近の記録を見てみましょう。"
+run = "tail app.log"
+after = "最後の 10 行だけが表示されました。いちばん下が、いちばん新しい記録です。"
+
+[[try]]
+say = "`head` と同じく、行数は `-n` で指定できます。`tail -n 3 app.log` と打ってみましょう。"
+run = "tail -n 3 app.log"
+after = "末尾の 3 行だけになりました。"
+
+[challenge]
+ask = "`app.log` の最新の {{n}} 件(末尾の {{n}} 行)を表示してください。"
+solution = "tail -n {{n}} app.log"
+hints = [
+    "使い方は `head` と同じです。`-n` のあとに行数を書きます。",
+    "`tail -n {{n}} app.log` と打ちます。",
+]
+done = "「さっき何が起きたか」を知りたいときは、まず `tail` です。`tail -f` とすると終了せずに待ち続け、書き足された行をその場で表示します(Ctrl-C で終了)。"

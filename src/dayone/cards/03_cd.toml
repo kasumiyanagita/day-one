@@ -1,0 +1,43 @@
+command = "cd"
+category = "場所と移動"
+title = "別のディレクトリへ移動する"
+summary = "いまいる場所を、指定したディレクトリに変えます。"
+when = "作業したいファイルがある場所へ行くとき。毎回長い道順を書かずに済むよう、先にその場所へ入っておきたいとき。"
+syntax = "cd [ディレクトリ]"
+dirs = [
+    "documents/reports",
+    "documents/letters",
+    "projects/website",
+    "projects/notes",
+    "pictures/trip",
+    "music",
+]
+
+[vars]
+place = ["documents/reports", "documents/letters", "projects/website", "projects/notes", "pictures/trip"]
+
+[[try]]
+say = "`cd documents` と打って、documents ディレクトリの中へ入ってみましょう。プロンプト(入力を待っている行)の表示に注目してください。"
+run = "cd documents"
+after = "プロンプトが `~/documents` に変わりました。これがいまいる場所です。`~` はホームディレクトリを表す記号です。"
+
+[[try]]
+say = "1 つ上の階層へ戻るには `cd ..` と打ちます。`..` は「いまいる場所の 1 つ上」という意味です。"
+run = "cd .."
+after = "ホームディレクトリに戻りました。"
+
+[[try]]
+say = "いま、あなたを奥のディレクトリへ移動させました(プロンプトを見てください)。ここから、行き先を書かずに `cd` とだけ打ってみましょう。"
+run = "cd"
+before = "cd ~/documents/reports"
+after = "どこにいても、`cd` だけでホームディレクトリへ戻れます。迷ったときの帰り道です。"
+
+[challenge]
+ask = "`{{place}}` へ移動してください。途中のディレクトリは `/` でつなげて、一度に書けます。"
+solution = "cd ~/{{place}}"
+check = "cwd"
+hints = [
+    "`cd documents/reports` のように、通り道のディレクトリを `/` でつなげて書きます。1 つずつ `cd` を重ねても構いません。",
+    "ホームにいる状態で `cd {{place}}` と打ちます。",
+]
+done = "`cd` は change directory の略です。`cd` で移動し、`pwd` で場所を確かめ、`ls` で中を見る。この 3 つがターミナルの中を歩き回る基本です。"
