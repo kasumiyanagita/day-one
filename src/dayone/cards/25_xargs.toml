@@ -1,0 +1,57 @@
+command = "xargs"
+category = "ファイルを探す・守る"
+title = "受け取った名前を、次のコマンドに渡す"
+summary = "パイプで受け取った言葉(ファイルの名前など)を、後ろに書いたコマンドの引数にして実行します。"
+when = "`grep` や `find` で見つけたファイルを、まとめて移動したり消したりしたいとき。"
+syntax = "名前を出すコマンド | xargs 実行するコマンド"
+
+[[files]]
+path = "names.txt"
+content = """alpha
+beta
+gamma
+"""
+
+[[files]]
+path = "sales-01.csv"
+content = "id,amount\n1,1200\nchecksum=OK\n"
+
+[[files]]
+path = "sales-02.csv"
+content = "id,amount\n2,####\nchecksum=BROKEN\n"
+
+[[files]]
+path = "sales-03.csv"
+content = "id,amount\n3,800\nchecksum=OK\n"
+
+[[files]]
+path = "sales-04.csv"
+content = "id,amount\n4,@@@@\nchecksum=BROKEN\n"
+
+[[files]]
+path = "sales-05.csv"
+content = "id,amount\n5,640\nchecksum=OK\n"
+
+[[files]]
+path = "quarantine/readme.txt"
+content = "壊れたファイルの置き場\n"
+
+[[try]]
+say = "`names.txt` には、名前が 3 行書いてあります。`cat names.txt | xargs mkdir` と打ってみましょう。"
+run = "cat names.txt | xargs mkdir"
+after = "`mkdir alpha beta gamma` と打ったのと同じことが起き、ディレクトリが 3 つできました(`ls` で確かめられます)。`xargs` は、受け取った言葉を後ろのコマンドの引数に並べて実行します。"
+
+[[try]]
+say = "次に、壊れたファイルを探します。`grep -l BROKEN *.csv` と打ってみましょう。`-l` は、一致した行ではなく、ファイルの名前だけを出すオプションです。"
+run = "grep -l BROKEN *.csv"
+after = "`BROKEN` を含むファイルの名前が 2 つ出ました。この名前を `xargs` に渡せば、まとめて操作できます。"
+
+[challenge]
+ask = "`BROKEN` を含む `.csv` ファイルを、すべて `quarantine` ディレクトリへ移動してください。`grep -l` で名前を出し、`xargs` で `mv` に渡します。"
+solution = "grep -l BROKEN *.csv | xargs mv -t quarantine"
+check = "files"
+hints = [
+    "`mv` は、ふつう行き先を最後に書きます。`xargs` は名前を最後に並べるので、行き先を先に書ける `mv -t 行き先` を使います。",
+    "`grep -l BROKEN *.csv | xargs mv -t quarantine` と打ちます。",
+]
+done = "「探すコマンド | xargs 何かするコマンド」は、たくさんのファイルを一度に扱うときの決まった形です。名前に空白が入るファイルがあるときは、`grep -lZ … | xargs -0 …` のように、区切りを特別な文字にして安全に渡します。"

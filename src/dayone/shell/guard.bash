@@ -49,6 +49,13 @@ __dayone_kill_allowed() {
     return 0
 }
 
+# kill と打たれたときは、この関数が受け取る。引数が展開されたあと(`kill $(cat worker.pid)` なら PID になったあと)で
+# 調べられるので、PID を直接書いていなくても、このカードのプロセスなら通せる。
+kill() {
+    __dayone_kill_allowed "$@" || return 1
+    builtin kill "$@"
+}
+
 # DEBUG トラップから各コマンドの実行直前に呼ばれる。0 以外を返すとそのコマンドは実行されない。
 __dayone_guard() {
     [[ -n ${COMP_LINE-} ]] && return 0
@@ -58,7 +65,11 @@ __dayone_guard() {
 
     case ${words[0]##*/} in
         kill)
-            __dayone_kill_allowed "${words[@]:1}" || return 1
+            # kill とだけ書かれたものは、上の kill 関数が展開後の引数で調べる。
+            # /bin/kill のように場所を書いたものは関数を通らないので、ここで書かれたままの引数を調べる
+            if [[ ${words[0]} != kill ]]; then
+                __dayone_kill_allowed "${words[@]:1}" || return 1
+            fi
             ;;
         pkill|killall)
             echo "dayone: 簡易モードでは ${words[0]##*/} は使えません。ps で PID を調べて kill を使ってください" >&2

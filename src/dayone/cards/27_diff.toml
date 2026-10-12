@@ -1,0 +1,77 @@
+command = "diff"
+category = "書き換える・比べる"
+title = "2 つのファイルの違いを調べる"
+summary = "2 つのファイルを比べて、違っている行を表示します。同じなら、何も表示しません。"
+when = "設定ファイルを書き換える前と後で、どこが変わったかを確かめたいとき。動いている設定と、控えの設定を見比べたいとき。"
+syntax = "diff [-u] ファイル1 ファイル2"
+
+[vars]
+pair = ["config", "list"]
+
+[[files]]
+path = "menu-old.txt"
+content = """coffee 400
+tea 350
+juice 300
+cake 500
+"""
+
+[[files]]
+path = "menu-new.txt"
+content = """coffee 450
+tea 350
+juice 300
+cake 500
+cookie 200
+"""
+
+[[files]]
+path = "config-before.txt"
+content = """host = db-old
+port = 5432
+timeout = 10
+"""
+
+[[files]]
+path = "config-after.txt"
+content = """host = db-new
+port = 5432
+timeout = 30
+"""
+
+[[files]]
+path = "list-before.txt"
+content = """apple
+banana
+cherry
+"""
+
+[[files]]
+path = "list-after.txt"
+content = """apple
+blueberry
+cherry
+melon
+"""
+
+[[try]]
+say = "`menu-old.txt` と `menu-new.txt` は、よく似た 2 つのファイルです。`diff menu-old.txt menu-new.txt` と打って、違いを調べてみましょう。"
+run = "diff menu-old.txt menu-new.txt"
+status = [0, 1]
+after = "`<` で始まる行は 1 つ目のファイルにだけある行、`>` で始まる行は 2 つ目にだけある行です。`1c1` は「1 行目が変わった」、`4a5` は「4 行目のあとに 5 行目が足された」という意味です。"
+
+[[try]]
+say = "`-u` を付けると、前後の行も一緒に出て、読みやすくなります。`diff -u menu-old.txt menu-new.txt` と打ってみましょう。"
+run = "diff -u menu-old.txt menu-new.txt"
+status = [0, 1]
+after = "`-` で始まる行が消えた行、`+` で始まる行が増えた行です。変わっていない行も前後に出るので、どこの話かが分かります。"
+
+[challenge]
+ask = "`{{pair}}-before.txt` と `{{pair}}-after.txt` の違いを表示してください。"
+solution = "diff {{pair}}-before.txt {{pair}}-after.txt"
+status = [0, 1]
+hints = [
+    "`diff` のあとに、比べたい 2 つのファイルを、前・後の順に並べます。",
+    "`diff {{pair}}-before.txt {{pair}}-after.txt` と打ちます。",
+]
+done = "`diff` は difference(違い)の略です。設定を書き換えたあとに `diff` で見比べると、「直したかった所だけが変わっていて、余計な所は変わっていない」ことを確かめられます。"

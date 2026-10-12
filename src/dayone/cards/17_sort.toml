@@ -1,0 +1,77 @@
+command = "sort"
+category = "絞り込む・数える"
+title = "行を並べ替える"
+summary = "ファイルの行を、順番に並べ替えて表示します。元のファイルは変わりません。"
+when = "名前をあいうえお順や ABC 順に並べたいとき。数の大きい順に並べて、上位を見たいとき。"
+syntax = "sort [オプション] ファイル"
+
+[vars]
+file = ["scores.txt", "prices.txt"]
+
+[[files]]
+path = "fruits.txt"
+content = """orange
+apple
+grape
+banana
+melon
+"""
+
+[[files]]
+path = "sizes.txt"
+content = """9
+100
+25
+3
+1200
+47
+"""
+
+[[files]]
+path = "scores.txt"
+content = """72
+8
+95
+100
+31
+64
+"""
+
+[[files]]
+path = "prices.txt"
+content = """480
+1200
+90
+35
+2500
+760
+"""
+
+[[try]]
+say = "`fruits.txt` には、果物の名前が順不同で並んでいます。`sort fruits.txt` と打って、ABC 順に並べてみましょう。"
+run = "sort fruits.txt"
+after = "`apple` から順に並びました。表示が並べ替えられただけで、`fruits.txt` の中身は変わっていません。"
+
+[[try]]
+say = "数を並べるときは注意が必要です。まず `sort sizes.txt` と打って、数のファイルをそのまま並べてみましょう。"
+run = "sort sizes.txt"
+after = "`100`、`1200`、`25`、`3` … と、数の大きさの順になっていません。何も指定しないと、`sort` は文字として(先頭の 1 文字から)比べるからです。"
+
+[[try]]
+say = "数として比べるには `-n` を付けます。`sort -n sizes.txt` と打ってみましょう。"
+run = "sort -n sizes.txt"
+after = "`3` から `1200` まで、小さい順に並びました。`-n` は numeric(数値)の頭文字です。"
+
+[[try]]
+say = "逆の順にするには `-r` を足します。`sort -rn sizes.txt` と打って、大きい順に並べてみましょう。"
+run = "sort -rn sizes.txt"
+after = "大きい順になりました。`-r` は reverse(逆)の頭文字で、`-rn` は `-r` と `-n` をまとめて書いたものです。"
+
+[challenge]
+ask = "`{{file}}` の数を、大きい順に並べて表示してください。"
+solution = "sort -rn {{file}}"
+hints = [
+    "数として比べる `-n` と、逆順にする `-r` の両方が必要です。",
+    "`sort -rn {{file}}` と打ちます。",
+]
+done = "`sort -rn` は「多い順ランキング」を作るときの決まった形です。このあと覚える `uniq` と組み合わせると、ログの中で何が多いかを数えられます。"

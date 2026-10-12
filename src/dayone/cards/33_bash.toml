@@ -1,0 +1,61 @@
+command = "bash"
+category = "スクリプトを書く準備"
+title = "スクリプトを実行する"
+summary = "コマンドを並べて書いたファイル(スクリプト)を、上から順に実行します。"
+when = "毎回打っている同じ手順を、ファイルにまとめて 1 回で実行したいとき。夜中の作業を、次からは自動で済ませたいとき。"
+syntax = "bash スクリプト [引数...]"
+
+[vars]
+n = ["3", "25", "10", "11"]
+
+[[files]]
+path = "hello.sh"
+content = '''echo "こんにちは"
+echo "きょうも 1 日がんばりましょう"
+'''
+
+[[files]]
+path = "greet.sh"
+content = '''echo "こんにちは、$1 さん"
+echo "受け取った引数は $# 個です"
+'''
+
+[[files]]
+path = "judge.sh"
+content = '''#!/bin/bash
+if [ "$1" -gt 10 ]; then
+    echo "ALERT $1"
+    exit 1
+fi
+echo "OK $1"
+'''
+
+[[try]]
+say = "まず、スクリプトの中身を見ます。`cat hello.sh` と打ってみましょう。"
+run = "cat hello.sh"
+after = "`echo` が 2 行、書いてあるだけのファイルです。スクリプトは、ふだん打っているコマンドを並べたものです。"
+
+[[try]]
+say = "`bash hello.sh` と打って、実行してみましょう。"
+run = "bash hello.sh"
+after = "書いてあるコマンドが、上から順に実行されました。"
+
+[[try]]
+say = "スクリプトには、値を渡せます。`cat greet.sh` で中身を見てから、`bash greet.sh taro` と打ってみましょう。"
+run = "bash greet.sh taro"
+after = "`$1` が、渡した 1 つ目の値(`taro`)に置き換わりました。2 つ目は `$2` です。`$#` は、渡された値の数を表します。"
+
+[[try]]
+say = "最後に、場合分けのあるスクリプトを見ます。`cat judge.sh` と打ってみましょう。"
+run = "cat judge.sh"
+after = "`if [ 条件 ]; then … fi` は、条件が成り立つときだけ中を実行します。ここでは「受け取った数が 10 より大きければ `ALERT` と表示して、終了コード 1 で終わる。そうでなければ `OK` と表示する」という意味です。1 行目の `#!/bin/bash` は、「このファイルは bash で実行する」という目印です。"
+
+[challenge]
+ask = "`judge.sh` に `{{n}}` を渡して実行してください。"
+solution = "bash judge.sh {{n}}"
+status = [0, 1]
+hints = [
+    "`bash` のあとに、スクリプトの名前、渡す値の順に書きます。",
+    "`bash judge.sh {{n}}` と打ちます。",
+]
+done = "`chmod +x judge.sh` で実行の権限を付けると、`./judge.sh 25` のように、名前だけで実行できます。スクリプトの中では `count=$(grep -c ERROR app.log)` のように、コマンドの結果を名前(変数)に入れておいて、あとの `if` で使えます。"

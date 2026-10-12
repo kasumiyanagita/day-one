@@ -1,0 +1,40 @@
+command = "sed"
+category = "書き換える・比べる"
+title = "文字を置き換える"
+summary = "ファイルの中の文字を、別の文字に置き換えて表示します。`-i` を付けると、ファイルそのものを書き換えます。"
+when = "設定ファイルの中の古いサーバー名を、新しい名前に直したいとき。たくさんのファイルの同じ箇所を、まとめて書き換えたいとき。"
+syntax = "sed 's/置き換える前/置き換えたあと/' ファイル"
+
+[vars]
+new = ["prod-01", "main-db", "web-02"]
+
+[[files]]
+path = "config.txt"
+content = """host = old-server
+port = 8080
+mode = test
+"""
+
+[[try]]
+say = "`config.txt` の `test` を `prod` に置き換えてみます。`sed 's/test/prod/' config.txt` と打ってみましょう。`s/前/後/` が「前を後に置き換える」という指示です。"
+run = "sed 's/test/prod/' config.txt"
+after = "3 行目が `mode = prod` になって表示されました。"
+
+[[try]]
+say = "ただし、ファイルは変わっていません。`cat config.txt` と打って確かめましょう。"
+run = "cat config.txt"
+after = "`mode = test` のままです。`sed` は、置き換えた結果を画面に出すだけです。先に結果を確かめられるので、安全です。"
+
+[[try]]
+say = "ファイルそのものを書き換えるには `-i` を付けます。`sed -i 's/8080/9090/' config.txt` と打ってみましょう。"
+run = "sed -i 's/8080/9090/' config.txt"
+after = "何も表示されませんが、`config.txt` の `8080` が `9090` に書き換わりました(`cat config.txt` で確かめられます)。`-i` は元に戻せないので、先に `-i` なしで結果を確かめるのが決まりです。"
+
+[challenge]
+ask = "`config.txt` の `old-server` を `{{new}}` に置き換えた結果を、表示してください。ファイルは書き換えなくて構いません。"
+solution = "sed 's/old-server/{{new}}/' config.txt"
+hints = [
+    "`s/置き換える前/置き換えたあと/` を引用符で囲んで、`sed` に渡します。",
+    "`sed 's/old-server/{{new}}/' config.txt` と打ちます。",
+]
+done = "`sed` は stream editor の略です。`s/前/後/` は各行の最初の 1 つだけを置き換えます。行の中の全部を置き換えるには `s/前/後/g`、条件に合う行を消すには `/言葉/d` と書きます。`*.conf` のように複数のファイルを渡せば、まとめて直せます。"

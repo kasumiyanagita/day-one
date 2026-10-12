@@ -1,0 +1,78 @@
+command = "find"
+category = "ファイルを探す・守る"
+title = "条件に合うファイルを探す"
+summary = "ディレクトリの中を奥までたどって、名前や種類などの条件に合うファイルを探します。"
+when = "ファイルがどこにあるか分からないとき。「.log で終わるファイルを全部」のように、まとめて見つけたいとき。"
+syntax = "find 探す場所 条件"
+
+[vars]
+name = ["report-2.txt", "budget.csv", "photo.png"]
+
+[[files]]
+path = "logs/app.log"
+content = "起動しました\n"
+
+[[files]]
+path = "logs/old/app-1.log"
+content = "古い記録\n"
+
+[[files]]
+path = "logs/old/app-2.log"
+content = "古い記録\n"
+
+[[files]]
+path = "docs/reports/report-1.txt"
+content = "1 月\n"
+
+[[files]]
+path = "docs/reports/report-2.txt"
+content = "2 月\n"
+
+[[files]]
+path = "docs/money/budget.csv"
+content = "項目,金額\n"
+
+[[files]]
+path = "pictures/trip/photo.png"
+content = "(画像)\n"
+
+[[files]]
+path = "work/cache-1.tmp"
+content = "一時ファイル\n"
+
+[[files]]
+path = "work/draft/cache-2.tmp"
+content = "一時ファイル\n"
+
+[[files]]
+path = "work/draft/idea.txt"
+content = "メモ\n"
+
+[[try]]
+say = "いまいる場所(`.`)から下を全部たどって、名前が `.log` で終わるファイルを探します。`find . -name '*.log'` と打ってみましょう。`*` は「何でもよい」という意味で、引用符で囲んで書きます。"
+run = "find . -name '*.log'"
+after = "奥のディレクトリにあるものまで、3 つ見つかりました。`ls` と違って、下の階層を全部たどります。"
+
+[[try]]
+say = "探す場所は、ディレクトリの名前で絞れます。`find docs -name '*.txt'` と打って、`docs` の下だけを探してみましょう。"
+run = "find docs -name '*.txt'"
+after = "`docs` の下にある `.txt` だけが表示されました。"
+
+[[try]]
+say = "種類でも探せます。`find . -type d` と打って、ディレクトリだけを一覧にしてみましょう。"
+run = "find . -type d"
+after = "`-type d` はディレクトリ、`-type f` は普通のファイルを表します。"
+
+[[try]]
+say = "見つけたものを、そのまま消すこともできます。`find work -name '*.tmp' -delete` と打って、`work` の下の一時ファイルを消してみましょう。"
+run = "find work -name '*.tmp' -delete"
+after = "何も表示されませんが、2 つの `.tmp` が消えました。`-delete` は確認なしで消すので、先に `-delete` を付けずに実行して、何が見つかるかを確かめるのが安全です。"
+
+[challenge]
+ask = "`{{name}}` という名前のファイルがどこにあるかを、いまいる場所から探して表示してください。"
+solution = "find . -name {{name}}"
+hints = [
+    "探す場所は `.`(いまいる場所)、条件は `-name` です。",
+    "`find . -name {{name}}` と打ちます。",
+]
+done = "`find` の条件は組み合わせられます。`-size +10M`(10MB より大きい)や `-mtime +7`(7 日より前に更新)を並べれば、「古くて大きいファイル」だけを探せます。ディスクがいっぱいになったときの調査で使います。"

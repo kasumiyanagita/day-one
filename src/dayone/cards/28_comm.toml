@@ -1,0 +1,81 @@
+command = "comm"
+category = "書き換える・比べる"
+title = "2 つの一覧を突き合わせる"
+summary = "並べ替えてある 2 つのファイルを比べて、「片方にだけある行」と「両方にある行」に分けて表示します。"
+when = "「注文を受けた一覧」と「支払いが済んだ一覧」を比べて、支払いがまだのものを見つけたいとき。"
+syntax = "comm [-1] [-2] [-3] ファイル1 ファイル2"
+
+[vars]
+set = ["ordered", "invited"]
+
+[[files]]
+path = "yesterday.txt"
+content = """ito
+sato
+suzuki
+tanaka
+"""
+
+[[files]]
+path = "today.txt"
+content = """kato
+sato
+tanaka
+yamada
+"""
+
+[[files]]
+path = "ordered.txt"
+content = """A-101
+A-102
+A-103
+A-104
+A-105
+"""
+
+[[files]]
+path = "ordered-done.txt"
+content = """A-101
+A-103
+A-104
+"""
+
+[[files]]
+path = "invited.txt"
+content = """abe
+endo
+mori
+ono
+ueda
+"""
+
+[[files]]
+path = "invited-done.txt"
+content = """abe
+mori
+ueda
+"""
+
+[[try]]
+say = "`yesterday.txt` と `today.txt` は、きのうと今日の来客の名前を、ABC 順に並べたものです。`comm yesterday.txt today.txt` と打ってみましょう。"
+run = "comm yesterday.txt today.txt"
+after = "3 つの列に分かれて表示されました。左の列が「きのうだけ」、真ん中が「今日だけ」、右が「両方」に来た人です。"
+
+[[try]]
+say = "いらない列は、番号で消せます。`comm -12 yesterday.txt today.txt` と打って、1 列目と 2 列目を消してみましょう。"
+run = "comm -12 yesterday.txt today.txt"
+after = "3 列目だけが残り、両方に来た人が表示されました。"
+
+[[try]]
+say = "今度は `comm -23 yesterday.txt today.txt` と打って、2 列目と 3 列目を消してみましょう。"
+run = "comm -23 yesterday.txt today.txt"
+after = "1 列目だけが残り、「きのうは来たが、今日は来ていない人」が表示されました。"
+
+[challenge]
+ask = "`{{set}}.txt` にはあるが、`{{set}}-done.txt` にはない行だけを表示してください。"
+solution = "comm -23 {{set}}.txt {{set}}-done.txt"
+hints = [
+    "「1 つ目のファイルにだけある行」は 1 列目です。2 列目と 3 列目を消します。",
+    "`comm -23 {{set}}.txt {{set}}-done.txt` と打ちます。",
+]
+done = "`comm` は common(共通)の略です。2 つのファイルは、どちらも `sort` で並べ替えてある必要があります。並んでいないファイルは、先に `sort ファイル > 並べ替えたファイル` で作ってから比べます。"

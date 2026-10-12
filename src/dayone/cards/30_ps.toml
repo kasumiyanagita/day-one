@@ -1,0 +1,48 @@
+command = "ps"
+category = "プロセスを調べる・止める"
+title = "動いているプログラムを一覧にする"
+summary = "いま動いているプログラム(プロセス)を一覧にします。それぞれに、PID という番号が付いています。"
+when = "サーバーで何が動いているかを確かめたいとき。止めたいプログラムの番号(PID)を調べたいとき。"
+syntax = "ps aux"
+
+[vars]
+name = ["backup.sh", "report.sh"]
+
+[[files]]
+path = "backup.sh"
+content = "while true; do sleep 1; done\n"
+
+[[files]]
+path = "report.sh"
+content = "while true; do sleep 1; done\n"
+
+[[files]]
+path = "sync.sh"
+content = "while true; do sleep 1; done\n"
+
+[[try]]
+say = "`ps` と打ってみましょう。この端末から動かしているプログラムが表示されます。"
+run = "ps"
+after = "いま使っているシェル(`bash`)と、`ps` 自身が出ました。左端の `PID` が、プログラム 1 つ 1 つに付く番号です。"
+
+[[try]]
+say = "ほかのプログラムも含めて全部を見るには、`ps aux` と打ちます。試してみましょう。"
+run = "ps aux"
+after = "持ち主(`USER`)、番号(`PID`)、CPU やメモリの使用量、動かしたコマンド(`COMMAND`)が並びます。本物のサーバーでは、何百行にもなります。"
+
+[[try]]
+say = "いま、`sync.sh` というプログラムを裏で動かしました。`ps aux | grep sync.sh` と打って、一覧から探してみましょう。"
+run = "ps aux | grep sync.sh"
+before = "( setsid bash sync.sh > /dev/null 2>&1 < /dev/null & ); sleep 0.3"
+after = "`bash sync.sh` の行が見つかりました。2 列目の数字が、その PID です。`grep sync.sh` という行も出ますが、これは探している `grep` 自身です。"
+
+[challenge]
+ask = "いま、`{{name}}` というプログラムを裏で動かしました。動いているプログラムの一覧から、`{{name}}` を含む行だけを表示してください。"
+solution = "ps aux | grep {{name}}"
+before = "( setsid bash {{name}} > /dev/null 2>&1 < /dev/null & ); sleep 0.3"
+check = "command"
+hints = [
+    "`ps aux` の結果を、パイプで `grep` に渡して絞り込みます。",
+    "`ps aux | grep {{name}}` と打ちます。",
+]
+done = "`ps` は process status の略です。`aux` は「全員のプロセスを、詳しく」という意味のオプションで、`-` を付けずに書きます。暴走しているプログラムを止めるときは、まず `ps aux | grep 名前` で PID を調べます。"

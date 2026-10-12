@@ -82,7 +82,7 @@ def test_only_exit_quits_from_the_top_page(tmp_path):
     screen, code = run_app(tmp_path, ["zzz\r", "1\r", "\x1b[C", "\x1b[D", "m\r", "q\r", "top\r", "title\r", "exit\r"])
     assert "Traceback" not in screen
     assert screen.count("入力してください") == 6  # トップページでは m も q も top も title も働かない
-    assert "ページ 2/4" in screen
+    assert "ページ 2/8" in screen
     assert "おつかれさまでした" in screen and code == 0
 
 
@@ -154,7 +154,7 @@ def test_exit_in_the_tutorial_quits_and_does_not_show_it_again(tmp_path):
 def test_top_page_is_redrawn_when_the_terminal_is_resized(tmp_path):
     screen, code = run_app(tmp_path, [(40, 120), "\x1b[C", (24, 80), "exit\r"], rows=24, columns=80)
     assert "Traceback" not in screen
-    # 小さい画面では 4 ページ。広げると描き直されて 2 ページになり、→ で 2 ページ目へ。
-    # 元の大きさに戻すと、また描き直されて 4 ページの表示になる(見ていたページは保つ)
-    assert re.findall(r"ページ \d/\d", screen) == ["ページ 1/4", "ページ 1/2", "ページ 2/2", "ページ 2/4"]
+    # 小さい画面では 8 ページ。広げると描き直されて 3 ページになり、→ で 2 ページ目へ。
+    # 元の大きさに戻すと、また描き直されて 8 ページの表示になる(見ていたページは保つ)
+    assert re.findall(r"ページ \d/\d", screen) == ["ページ 1/8", "ページ 1/3", "ページ 2/3", "ページ 2/8"]
     assert "おつかれさまでした" in screen and code == 0

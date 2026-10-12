@@ -11,6 +11,7 @@ import secrets
 import shutil
 import subprocess
 import tempfile
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -97,7 +98,7 @@ def compute_reference(
     try:
         subprocess.run(argv, env=env, cwd=cwd, stdin=subprocess.DEVNULL, capture_output=True, timeout=30)
         status = (run / "ref.status").read_text().strip()
-        if status != "0":
+        if not status.isdigit() or int(status) not in card.challenge.status:
             raise CardError(f"{card.id}: お手本 `{card.challenge.solution}` が終了コード {status} で失敗した")
         return Reference(
             output=(run / "ref.out").read_text(errors="replace"),
@@ -314,7 +315,7 @@ class Lesson:
 
     def _on_step(self, result: CommandResult) -> None:
         step = self.card.steps[self._step]
-        if result.status == 0 and follows_example(result.command, step.run):
+        if result.status in step.status and follows_example(result.command, step.run):
             if step.after:
                 self.console.print()
                 self._say(step.after, mark=f"[d.done]{design.active.CHECK}[/] ")
@@ -335,10 +336,10 @@ class Lesson:
         problem = ""
         if challenge.check == "command":
             # less や man のように画面を使うコマンドは、出力ではなく「開いて、正常に閉じたか」を見る
-            result_ok = uses_ok = result.status == 0 and follows_example(result.command, challenge.solution)
+            result_ok = uses_ok = result.status in challenge.status and follows_example(result.command, challenge.solution)
             problem = "開くものが、お題と違うようです。"
         elif challenge.check == "output":
-            result_ok = result.status == 0 and tokens(result.output) == tokens(self.reference.output)
+            result_ok = result.status in challenge.status and tokens(result.output) == tokens(self.reference.output)
             uses_ok = all(name in used for name in challenge.uses)
             problem = "お題の答えとは、出力が違うようです。"
         else:
@@ -347,6 +348,14 @@ class Lesson:
             if challenge.check == "cwd":
                 result_ok = result.cwd == self.reference.cwd
                 problem = "いまいる場所が、お題と違うようです。"
+            elif challenge.check == "process":
+                # このコマンドの中で起動したプロセスのうち、目当てのものがすべて止まっているか
+                def alive() -> bool:
+                    return any(challenge.target in " ".join(p.argv) for p in procs.session_processes(self.session))
+
+                # 止めた直後は、プロセスが消えるまでにわずかな間がある。動いて見えたら、少し待って確かめ直す
+                result_ok = not alive() or (time.sleep(0.3) or not alive())
+                problem = "止めるプロセスが、まだ動いているようです。`ps aux` で確かめられます。"
             else:
                 problem = compare_files(snapshot(self.home), self.reference.before, self.reference.after) or ""
                 result_ok = not problem

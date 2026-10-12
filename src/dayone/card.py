@@ -14,7 +14,7 @@ from dataclasses import dataclass, field, replace
 from pathlib import Path
 
 CARDS_DIR = Path(__file__).parent / "cards"
-CHECKS = ("output", "cwd", "files", "command")
+CHECKS = ("output", "cwd", "files", "command", "process")
 
 _PLACEHOLDER = re.compile(r"\{\{(\w+)\}\}")
 
@@ -36,6 +36,8 @@ class Step:
     before: str = ""  # 手順を出す前に、画面に出さずに実行しておくコマンド
     # vim のように、キー操作で結果が決まる手。お手本から正解を求めるときには実行しない
     interactive: bool = False
+    # 成功とみなす終了コード。diff のように「違いがあれば 1」を返すコマンドでは (0, 1) にする
+    status: tuple[int, ...] = (0,)
 
 
 @dataclass(frozen=True)
@@ -47,6 +49,10 @@ class Challenge:
     hints: tuple[str, ...] = ()
     done: str = ""  # コマンドの解説(名前の由来や使いどころ)。カードの最初の説明の枠に出す
     before: str = ""
+    # 成功とみなす終了コード(試し打ちの status と同じ)
+    status: tuple[int, ...] = (0,)
+    # check = "process" のとき: この文字列をコマンドラインに含むプロセスが、すべて止まっていれば正解
+    target: str = ""
 
 
 @dataclass(frozen=True)
@@ -87,6 +93,7 @@ class Card:
                 hints=tuple(fill(h) for h in challenge.hints),
                 done=fill(challenge.done),
                 before=fill(challenge.before),
+                target=fill(challenge.target),
             ),
             files=tuple(FileSpec(fill(f.path), fill(f.content), f.directory) for f in self.files),
             start=fill(self.start),
@@ -131,7 +138,14 @@ def _load(path: Path) -> Card:
         when=data["when"].strip(),
         syntax=data["syntax"],
         steps=tuple(
-            Step(s["say"].strip(), s["run"], s.get("after", "").strip(), s.get("before", ""), s.get("interactive", False))
+            Step(
+                s["say"].strip(),
+                s["run"],
+                s.get("after", "").strip(),
+                s.get("before", ""),
+                s.get("interactive", False),
+                tuple(s.get("status", [0])),
+            )
             for s in data.get("try", [])
         ),
         challenge=Challenge(
@@ -142,6 +156,8 @@ def _load(path: Path) -> Card:
             hints=tuple(h.strip() for h in challenge.get("hints", [])),
             done=challenge.get("done", "").strip(),
             before=challenge.get("before", ""),
+            status=tuple(challenge.get("status", [0])),
+            target=challenge.get("target", ""),
         ),
         files=tuple(files),
         start=data.get("start", ""),

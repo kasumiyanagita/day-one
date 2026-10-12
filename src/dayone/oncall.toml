@@ -1,21 +1,33 @@
 # 障害対応ゲーム oncall との対応。カードは id (ファイル名の番号を除いた部分) で指定する。
 
 # oncall を始める前に覚えておきたいカード
-ready = ["pwd", "ls", "cd", "cat", "head", "tail", "redirect", "pipe"]
+ready = ["pwd", "ls", "cd", "cat", "head", "tail", "redirect", "pipe", "grep", "sort", "uniq", "awk"]
 
 # oncall のミッションと、そこで使うカード
 [[missions]]
 title = "深夜の 500 祭り"
-cards = ["head", "pipe", "redirect"]
+cards = ["head", "pipe", "redirect", "grep", "sort", "uniq", "awk"]
+
+[[missions]]
+title = "満杯のディスクと開いた鍵"
+cards = ["find", "du", "chmod"]
+
+[[missions]]
+title = "置換ひとつで直るはずだった"
+cards = ["sed", "diff", "find"]
 
 [[missions]]
 title = "壊れたファイルを隔離せよ"
-cards = ["mv"]
+cards = ["mv", "xargs", "grep"]
 
 [[missions]]
 title = "止まらないワーカー"
-cards = ["tail"]
+cards = ["tail", "ps", "kill"]
 
 [[missions]]
 title = "消えた注文"
-cards = ["tail", "pipe", "redirect"]
+cards = ["tail", "pipe", "redirect", "cut", "comm", "join", "sort"]
+
+[[missions]]
+title = "同じ夜を繰り返さない"
+cards = ["wc", "test", "bash", "chmod", "awk"]

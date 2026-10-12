@@ -1,0 +1,77 @@
+command = "uniq"
+category = "絞り込む・数える"
+title = "同じ行をまとめて数える"
+summary = "同じ内容の行が続いているとき、1 行にまとめます。`-c` を付けると、何行あったかも数えます。"
+when = "名前の一覧から重複をなくしたいとき。ログの中で、どれが何回出てきたかを数えたいとき。"
+syntax = "sort ファイル | uniq [-c]"
+
+[vars]
+file = ["orders.txt", "votes.txt"]
+
+[[files]]
+path = "visitors.txt"
+content = """sato
+tanaka
+sato
+suzuki
+tanaka
+sato
+"""
+
+[[files]]
+path = "orders.txt"
+content = """coffee
+tea
+coffee
+juice
+coffee
+tea
+coffee
+juice
+tea
+coffee
+"""
+
+[[files]]
+path = "votes.txt"
+content = """red
+blue
+red
+green
+red
+blue
+green
+red
+blue
+red
+red
+"""
+
+[[try]]
+say = "`visitors.txt` には、来た人の名前が来た順に 6 行あり、同じ名前が何度か出てきます。まず `uniq visitors.txt` と打ってみましょう。"
+run = "uniq visitors.txt"
+after = "6 行のまま、何もまとまりませんでした。`uniq` がまとめるのは、**隣り合った**同じ行だけです。同じ名前が離れているので、まとまりません。"
+
+[[try]]
+say = "そこで、先に `sort` で並べ替えて、同じ名前を隣どうしにします。`sort visitors.txt | uniq` と打ってみましょう。"
+run = "sort visitors.txt | uniq"
+after = "3 人の名前が 1 行ずつになりました。`sort` してから `uniq`、という順番が決まりです。"
+
+[[try]]
+say = "`-c` を付けると、それぞれ何行あったかを先頭に付けてくれます。`sort visitors.txt | uniq -c` と打ってみましょう。"
+run = "sort visitors.txt | uniq -c"
+after = "`3 sato` のように、回数と名前が並びました。"
+
+[[try]]
+say = "最後に、回数の多い順に並べます。もう 1 つ `sort -rn` をつなげて、`sort visitors.txt | uniq -c | sort -rn` と打ってみましょう。"
+run = "sort visitors.txt | uniq -c | sort -rn"
+after = "いちばん多い `sato` が先頭に来ました。先頭の数を、数として大きい順に並べています。"
+
+[challenge]
+ask = "`{{file}}` に出てくる言葉を、回数の多い順に、回数を付けて表示してください。"
+solution = "sort {{file}} | uniq -c | sort -rn"
+hints = [
+    "3 つのコマンドをパイプでつなぎます。並べ替える → まとめて数える → 多い順に並べる、の順です。",
+    "`sort {{file}} | uniq -c | sort -rn` と打ちます。",
+]
+done = "`sort | uniq -c | sort -rn` は、「何が多いか」を調べるときの決まった形です。後ろに `| head -n 3` を足せば、上位 3 つだけを取り出せます。障害対応では、エラーの多い送信元を調べるときなどに何度も使います。"

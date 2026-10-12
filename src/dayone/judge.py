@@ -16,7 +16,7 @@ _COMMAND_NAME = re.compile(r"[\w.+-]+")
 _OPERATOR = re.compile(r"(>>|>|\|)")
 _SHORT_FLAGS = re.compile(r"-\w+")
 
-Snapshot = dict[str, tuple[str, str]]  # 相対パス → (種類, 中身の要約)
+Snapshot = dict[str, tuple[str, str, int]]  # 相対パス → (種類, 中身の要約, 権限)
 
 
 def plain(output: str) -> str:
@@ -70,14 +70,14 @@ def snapshot(root: Path) -> Snapshot:
             path = Path(directory, name)
             rel = str(path.relative_to(root))
             if path.is_symlink():
-                result[rel] = ("link", os.readlink(path))
+                result[rel] = ("link", os.readlink(path), 0)
             elif path.is_dir():
-                result[rel] = ("dir", "")
+                result[rel] = ("dir", "", path.stat().st_mode & 0o777)
             else:
                 try:
-                    result[rel] = ("file", hashlib.sha256(path.read_bytes()).hexdigest())
+                    result[rel] = ("file", hashlib.sha256(path.read_bytes()).hexdigest(), path.stat().st_mode & 0o777)
                 except OSError:
-                    result[rel] = ("file", "unreadable")
+                    result[rel] = ("file", "unreadable", path.stat().st_mode & 0o777)
     return result
 
 
@@ -99,14 +99,16 @@ def compare_files(actual: Snapshot, before: Snapshot, after: Snapshot) -> str | 
         if rel in actual:
             return f"`{rel}` がまだ残っています。"
 
-    for rel, (kind, digest) in sorted(after.items()):
-        changed = before.get(rel) != (kind, digest)
+    for rel, (kind, digest, mode) in sorted(after.items()):
+        changed = before.get(rel) != (kind, digest, mode)
         if rel not in actual:
             return f"`{rel}` がまだありません。"
-        actual_kind, actual_digest = actual[rel]
+        actual_kind, actual_digest, actual_mode = actual[rel]
         if actual_kind != kind:
             expected = {"dir": "ディレクトリ", "file": "ファイル", "link": "リンク"}[kind]
             return f"`{rel}` は{expected}のはずです。"
         if changed and actual_digest != digest:
             return f"`{rel}` の中身がお題と違います。"
+        if changed and actual_mode != mode:
+            return f"`{rel}` の権限がお題と違います。`ls -l` で確かめられます。"
     return None

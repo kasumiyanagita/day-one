@@ -69,4 +69,4 @@ def test_categories_are_contiguous_in_card_order():
     categories = [card.category for card in CARDS.values()]
     order = list(dict.fromkeys(categories))
     assert categories == sorted(categories, key=order.index)
-    assert len(CARDS) == 20
+    assert len(CARDS) == 38

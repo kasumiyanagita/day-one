@@ -1,0 +1,54 @@
+command = "cut"
+category = "絞り込む・数える"
+title = "区切り文字で列を取り出す"
+summary = "1 行を、指定した区切り文字で列に分け、ほしい列だけを取り出します。"
+when = "カンマ区切り(CSV)のファイルから、名前の列だけを取り出したいとき。`user=taro` のような書き方から、`=` の後ろだけを取り出したいとき。"
+syntax = "cut -d 区切り文字 -f 列の番号 ファイル"
+
+[vars]
+col = ["2", "3"]
+
+[[files]]
+path = "members.csv"
+content = """101,sato,sales
+102,suzuki,dev
+103,tanaka,dev
+104,ito,support
+105,yamada,sales
+"""
+
+[[files]]
+path = "visits.txt"
+content = """10:01 user=sato page=/home
+10:04 user=ito page=/cart
+10:09 user=sato page=/pay
+"""
+
+[[try]]
+say = "`members.csv` は、「番号,名前,部署」がカンマで区切られています。`cut -d, -f2 members.csv` と打って、2 列目(名前)だけを取り出してみましょう。"
+run = "cut -d, -f2 members.csv"
+after = "名前だけが表示されました。`-d` で区切り文字(delimiter)を、`-f` で何列目(field)かを指定します。"
+
+[[try]]
+say = "列は複数選べます。`cut -d, -f1,3 members.csv` と打って、1 列目と 3 列目を取り出してみましょう。"
+run = "cut -d, -f1,3 members.csv"
+after = "番号と部署が、カンマで区切られたまま表示されました。"
+
+[[try]]
+say = "区切り文字が空白のときは、`-d' '` のように引用符で囲みます。`cut -d' ' -f2 visits.txt` と打って、`visits.txt` の 2 列目を取り出してみましょう。"
+run = "cut -d' ' -f2 visits.txt"
+after = "`user=sato` のような部分だけになりました。"
+
+[[try]]
+say = "`cut` を 2 回つなげると、さらに細かく切り出せます。`cut -d' ' -f2 visits.txt | cut -d= -f2` と打ってみましょう。"
+run = "cut -d' ' -f2 visits.txt | cut -d= -f2"
+after = "まず空白で区切って 2 列目を取り、次に `=` で区切って後ろ側を取りました。名前だけが残ります。"
+
+[challenge]
+ask = "`members.csv` の {{col}} 列目だけを表示してください。区切り文字はカンマです。"
+solution = "cut -d, -f{{col}} members.csv"
+hints = [
+    "区切り文字は `-d,`、列の番号は `-f` のあとに書きます。",
+    "`cut -d, -f{{col}} members.csv` と打ちます。",
+]
+done = "`awk` も列を取り出せますが、`awk` は空白で区切るのが基本です。カンマや `=` のように決まった 1 文字で区切られているときは、`cut` のほうが短く書けます。"

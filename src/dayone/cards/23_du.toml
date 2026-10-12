@@ -1,0 +1,57 @@
+command = "du"
+category = "ファイルを探す・守る"
+title = "どれだけ場所を使っているかを調べる"
+summary = "ファイルやディレクトリが、ディスクの上でどれだけの大きさを占めているかを表示します。"
+when = "ディスクがいっぱいになって、何が場所を取っているのかを調べたいとき。"
+syntax = "du -sh ファイルやディレクトリ"
+
+[vars]
+dir = ["logs", "data", "backup"]
+
+[[files]]
+path = "logs/access.log"
+lines = 30000
+line = "10.0.0.{n} GET /index.html 200 記録 {n} 件目"
+
+[[files]]
+path = "logs/error.log"
+lines = 800
+line = "ERROR {n} 件目の失敗"
+
+[[files]]
+path = "data/users.csv"
+lines = 9000
+line = "{n},user-{n},member"
+
+[[files]]
+path = "backup/2024.tar"
+lines = 16000
+line = "backup block {n} ................................"
+
+[[files]]
+path = "notes/memo.txt"
+content = "買い物のメモ\n"
+
+[[try]]
+say = "`du -sh logs` と打って、`logs` ディレクトリ全体の大きさを調べてみましょう。"
+run = "du -sh logs"
+after = "`-s` は中身を合計して 1 行にまとめる(summary)、`-h` は `K` や `M` を付けて読みやすくする(human)という意味です。"
+
+[[try]]
+say = "`*` を使うと、いまいる場所にあるものを 1 つずつ調べられます。`du -sh *` と打ってみましょう。"
+run = "du -sh *"
+after = "ディレクトリごとの大きさが並びました。どれが大きいかを見比べられます。"
+
+[[try]]
+say = "大きい順に並べましょう。`du -sh * | sort -rh` と打ってみましょう。`sort` の `-h` は、`K` や `M` の付いた数を正しく比べるためのオプションです。"
+run = "du -sh * | sort -rh"
+after = "いちばん場所を取っているものが先頭に来ました。"
+
+[challenge]
+ask = "`{{dir}}` ディレクトリが全部でどれだけの大きさかを、読みやすい単位で 1 行にまとめて表示してください。"
+solution = "du -sh {{dir}}"
+hints = [
+    "合計を 1 行にまとめる `-s` と、読みやすい単位にする `-h` を付けます。",
+    "`du -sh {{dir}}` と打ちます。",
+]
+done = "`du` は disk usage(ディスクの使用量)の略です。「`du -sh * | sort -rh` で大きいものを見つけ、その中に入ってまた同じことをする」を繰り返すと、場所を取っているファイルにたどり着けます。"

@@ -1,0 +1,67 @@
+command = "join"
+category = "書き換える・比べる"
+title = "同じ番号の行をつなげる"
+summary = "2 つのファイルを、先頭の列(番号や名前)が同じ行どうしでつなげて、1 行にして表示します。"
+when = "「番号と名前」のファイルと「番号と金額」のファイルを、番号で突き合わせて 1 つの表にしたいとき。"
+syntax = "join ファイル1 ファイル2"
+
+[vars]
+set = ["prices", "stock"]
+
+[[files]]
+path = "users.txt"
+content = """1 sato
+2 suzuki
+3 tanaka
+4 ito
+"""
+
+[[files]]
+path = "teams.txt"
+content = """1 sales
+2 dev
+4 support
+"""
+
+[[files]]
+path = "items.txt"
+content = """101 coffee
+102 tea
+103 juice
+104 cake
+"""
+
+[[files]]
+path = "prices.txt"
+content = """101 400
+102 350
+103 300
+104 500
+"""
+
+[[files]]
+path = "stock.txt"
+content = """101 12
+102 0
+103 7
+104 3
+"""
+
+[[try]]
+say = "`users.txt` は「番号 名前」、`teams.txt` は「番号 部署」が並んだファイルです。`join users.txt teams.txt` と打って、番号でつなげてみましょう。"
+run = "join users.txt teams.txt"
+after = "同じ番号の行がつながって、「番号 名前 部署」の 1 行になりました。3 番は `teams.txt` にないので、表示されません。"
+
+[[try]]
+say = "逆に、相手が見つからなかった行だけを出すこともできます。`join -v1 users.txt teams.txt` と打ってみましょう。"
+run = "join -v1 users.txt teams.txt"
+after = "`teams.txt` に相手がいない、3 番の行だけが表示されました。`-v1` は「1 つ目のファイルの、つながらなかった行」という意味です。"
+
+[challenge]
+ask = "`items.txt` と `{{set}}.txt` を、先頭の番号が同じ行どうしでつなげて表示してください。"
+solution = "join items.txt {{set}}.txt"
+hints = [
+    "`join` のあとに、つなげたい 2 つのファイルを並べます。",
+    "`join items.txt {{set}}.txt` と打ちます。",
+]
+done = "`join` も `comm` と同じく、2 つのファイルが先頭の列で並べ替えてある必要があります。`comm` は「同じ行があるか」を比べ、`join` は「同じ番号の行をくっつける」という違いがあります。"

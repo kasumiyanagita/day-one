@@ -1,0 +1,64 @@
+command = "wc"
+category = "絞り込む・数える"
+title = "行数を数える"
+summary = "ファイルや、パイプで渡された内容の、行数・単語数・大きさを数えます。`-l` を付けると行数だけになります。"
+when = "ログに何件の記録があるかを知りたいとき。絞り込んだ結果が何行あるかを数えたいとき。"
+syntax = "wc [-l] ファイル"
+
+[vars]
+file = ["members.txt", "tasks.txt"]
+
+[[files]]
+path = "guests.txt"
+content = """sato
+suzuki
+takahashi
+tanaka
+ito
+watanabe
+yamamoto
+"""
+
+[[files]]
+path = "members.txt"
+lines = 12
+line = "member-{n}"
+
+[[files]]
+path = "tasks.txt"
+lines = 9
+line = "task {n}: 確認する"
+
+[[files]]
+path = "app.log"
+content = """09:01 INFO  起動しました
+09:05 ERROR データベースに接続できません
+09:07 INFO  接続しました
+09:12 ERROR 応答がありません
+09:15 INFO  復旧しました
+09:20 ERROR ディスクの空きが足りません
+"""
+
+[[try]]
+say = "`wc guests.txt` と打ってみましょう。3 つの数が出ます。"
+run = "wc guests.txt"
+after = "左から、行数・単語数・大きさ(バイト数)です。よく使うのは、いちばん左の行数です。"
+
+[[try]]
+say = "行数だけがほしいときは `-l` を付けます。`wc -l guests.txt` と打ってみましょう。"
+run = "wc -l guests.txt"
+after = "`7 guests.txt` と表示されました。`-l` は lines(行)の頭文字です。"
+
+[[try]]
+say = "パイプで受け取った内容も数えられます。`grep ERROR app.log | wc -l` と打って、`ERROR` の行が何行あるかを数えてみましょう。"
+run = "grep ERROR app.log | wc -l"
+after = "`3` と表示されました。「絞り込んでから数える」ときの決まった形です。"
+
+[challenge]
+ask = "`{{file}}` が何行あるかを表示してください。"
+solution = "wc -l {{file}}"
+hints = [
+    "行数だけを数えるオプションは `-l` です。",
+    "`wc -l {{file}}` と打ちます。",
+]
+done = "`wc` は word count(単語を数える)の略です。`… | wc -l` は「条件に合うものが何件あるか」を知る決まった形で、エラーの件数を数えて多すぎたら知らせる、といったスクリプトでも使います。"

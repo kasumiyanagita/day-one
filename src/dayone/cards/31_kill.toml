@@ -1,0 +1,65 @@
+command = "kill"
+category = "プロセスを調べる・止める"
+title = "動いているプログラムを止める"
+summary = "PID(プロセスの番号)を指定して、動いているプログラムを止めます。"
+when = "暴走して止まらなくなったプログラムを止めたいとき。"
+syntax = "kill [-9] PID"
+
+[vars]
+name = ["job-a", "job-b"]
+
+# どのスクリプトも、起動したときに自分の PID を「名前.pid」に書き出す(本物のサーバーでもよくある作り)
+[[files]]
+path = "worker.sh"
+content = "echo $$ > worker.pid\nwhile true; do sleep 1; done\n"
+
+[[files]]
+path = "stubborn.sh"
+content = "echo $$ > stubborn.pid\ntrap '' TERM\nwhile true; do sleep 1; done\n"
+
+[[files]]
+path = "job-a.sh"
+content = "echo $$ > job-a.pid\nwhile true; do sleep 1; done\n"
+
+[[files]]
+path = "job-b.sh"
+content = "echo $$ > job-b.pid\nwhile true; do sleep 1; done\n"
+
+[[try]]
+say = "いま、`worker.sh` というプログラムを裏で動かしました。まず `ps aux | grep worker.sh` と打って、動いていることを確かめましょう。"
+run = "ps aux | grep worker.sh"
+before = "( setsid bash worker.sh > /dev/null 2>&1 < /dev/null & ); sleep 0.3"
+after = "`bash worker.sh` の行が見つかりました。2 列目の数字が、止めるときに必要な PID です。"
+
+[[try]]
+say = "このプログラムは、自分の PID を `worker.pid` というファイルに書き出すように作ってあります。`cat worker.pid` と打って、見てみましょう。"
+run = "cat worker.pid"
+after = "さきほどの 2 列目と同じ数字が出ました。動かしているプログラムの PID をファイルに控えておくのは、本物のサーバーでもよくある作りです。"
+
+[[try]]
+say = "PID を指定して止めます。数字を手で打つ代わりに、`kill $(cat worker.pid)` と打ってみましょう。`$( )` の中のコマンドが先に実行され、その結果(PID)に置き換わります。"
+run = "kill $(cat worker.pid)"
+after = "何も表示されませんが、`worker.sh` は止まりました。`kill` は「終了してください」という合図を送るコマンドで、ふつうのプログラムは、これで後片付けをして終わります。"
+
+[[try]]
+say = "今度は `stubborn.sh` を動かしました。同じように `kill $(cat stubborn.pid)` と打ってみましょう。"
+run = "kill $(cat stubborn.pid)"
+before = "( setsid bash stubborn.sh > /dev/null 2>&1 < /dev/null & ); sleep 0.3"
+after = "実は、まだ動いています(`ps aux | grep stubborn.sh` で確かめられます)。このプログラムは、「終了してください」の合図を無視するように作られています。"
+
+[[try]]
+say = "合図を無視するプログラムは、`-9` を付けて強制的に止めます。`kill -9 $(cat stubborn.pid)` と打ってみましょう。"
+run = "kill -9 $(cat stubborn.pid)"
+after = "今度は止まりました。`-9` は、プログラムに断る余地を与えずに止めます。後片付けもできないので、ふつうの `kill` で止まらないときの最後の手段です。"
+
+[challenge]
+ask = "いま、`{{name}}.sh` というプログラムを裏で動かしました。このプログラムを止めてください。PID は `{{name}}.pid` に書いてあります(`ps aux | grep {{name}}.sh` でも調べられます)。"
+solution = "kill $(cat {{name}}.pid)"
+before = "( setsid bash {{name}}.sh > /dev/null 2>&1 < /dev/null & ); sleep 0.3"
+check = "process"
+target = "{{name}}.sh"
+hints = [
+    "`cat {{name}}.pid` で PID を調べ、その数字を `kill` に渡します。",
+    "`kill $(cat {{name}}.pid)` と打ちます。調べた PID を使って `kill 12345` のように打っても構いません。",
+]
+done = "止めるときは、「`ps` で相手を確かめる → ふつうの `kill` → だめなら `kill -9`」の順に進めます。似た名前のプログラムが並んでいるときは、PID を取り違えると、関係のないものを止めてしまいます。止める前に、`ps aux | grep 名前` で相手をよく確かめます。"

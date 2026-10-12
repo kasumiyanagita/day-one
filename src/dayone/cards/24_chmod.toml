@@ -1,0 +1,59 @@
+command = "chmod"
+category = "ファイルを探す・守る"
+title = "ファイルの権限を変える"
+summary = "ファイルを「誰が読めるか・書けるか・実行できるか」を変えます。"
+when = "パスワードや鍵のファイルを、自分以外に読めないようにしたいとき。自分で書いたスクリプトを、実行できるようにしたいとき。"
+syntax = "chmod 権限 ファイル"
+
+[vars]
+file = ["id_rsa.pem", "token.key", "passwords.txt"]
+
+[[files]]
+path = "secret.key"
+content = "ひみつの鍵\n"
+
+[[files]]
+path = "deploy.sh"
+content = "echo デプロイします\n"
+
+[[files]]
+path = "id_rsa.pem"
+content = "鍵の中身\n"
+
+[[files]]
+path = "token.key"
+content = "トークン\n"
+
+[[files]]
+path = "passwords.txt"
+content = "パスワードの控え\n"
+
+[[try]]
+say = "まず、いまの権限を見ます。`ls -l secret.key` と打ってみましょう。"
+run = "ls -l secret.key"
+after = "先頭の `-rw-r--r--` が権限です。最初の 1 文字のあと、3 文字ずつ「自分・同じグループ・その他の人」を表し、`r` は読める、`w` は書ける、`x` は実行できる、という意味です。いまは、ほかの人にも読める状態です。"
+
+[[try]]
+say = "自分だけが読み書きできるようにします。`chmod 600 secret.key` と打ってみましょう。"
+run = "chmod 600 secret.key"
+after = "何も表示されませんが、権限が変わりました。数字は「自分・グループ・その他」の順で、`6` は読み書きできる、`0` は何もできない、を表します。"
+
+[[try]]
+say = "もう一度 `ls -l secret.key` と打って、変わったことを確かめましょう。"
+run = "ls -l secret.key"
+after = "`-rw-------` になりました。自分以外は、読むことも書くこともできません。鍵やパスワードのファイルは、この `600` にしておきます。"
+
+[[try]]
+say = "スクリプトを実行できるようにするには、`+x` で実行の権限を足します。`chmod +x deploy.sh` と打ってみましょう。"
+run = "chmod +x deploy.sh"
+after = "これで `./deploy.sh` と打って実行できるようになりました。`+x` は「いまの権限に x を足す」という書き方です。"
+
+[challenge]
+ask = "`{{file}}` を、自分だけが読み書きできる権限に変えてください。"
+solution = "chmod 600 {{file}}"
+check = "files"
+hints = [
+    "自分は読み書きできる(6)、グループとその他は何もできない(0, 0)、という数字にします。",
+    "`chmod 600 {{file}}` と打ちます。`ls -l {{file}}` で確かめられます。",
+]
+done = "`chmod` は change mode の略です。数字は `r`=4、`w`=2、`x`=1 を足したもので、`6` は 4+2(読み書き)、`7` は 4+2+1(全部)です。秘密の鍵が `644`(誰でも読める)のままになっていないかは、障害対応や点検でよく確かめる点です。"

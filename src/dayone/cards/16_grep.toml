@@ -1,0 +1,62 @@
+command = "grep"
+category = "絞り込む・数える"
+title = "言葉を含む行だけを取り出す"
+summary = "ファイルの中から、指定した言葉を含む行だけを表示します。"
+when = "長いログの中から、エラーの行だけを見たいとき。ある言葉がファイルのどこに出てくるかを探したいとき。"
+syntax = "grep [オプション] 言葉 ファイル"
+
+[vars]
+word = ["timeout", "refused", "denied"]
+
+[[files]]
+path = "app.log"
+content = """09:01 INFO  起動しました
+09:02 INFO  設定を読み込みました
+09:05 ERROR データベースに接続できません
+09:06 WARN  再接続を試みます
+09:07 INFO  接続しました
+09:12 ERROR 応答がありません
+09:13 WARN  処理が遅れています
+09:15 INFO  復旧しました
+09:20 ERROR ディスクの空きが足りません
+"""
+
+[[files]]
+path = "server.log"
+content = """10:00 connect from 10.0.0.5
+10:01 timeout waiting for 10.0.0.9
+10:02 connect from 10.0.0.7
+10:03 refused connection from 10.0.0.3
+10:04 access denied for user guest
+10:05 timeout waiting for 10.0.0.4
+10:06 connect from 10.0.0.8
+10:07 access denied for user admin
+10:08 refused connection from 10.0.0.6
+10:09 timeout waiting for 10.0.0.2
+10:10 access denied for user test
+10:11 connect from 10.0.0.1
+"""
+
+[[try]]
+say = "`app.log` には、起動や接続の記録が 9 行あります。`grep ERROR app.log` と打って、`ERROR` を含む行だけを取り出してみましょう。"
+run = "grep ERROR app.log"
+after = "`ERROR` を含む 3 行だけが表示されました。見つかった言葉には色が付きます。"
+
+[[try]]
+say = "行そのものではなく、何行あるかだけを知りたいときは `-c` を付けます。`grep -c ERROR app.log` と打ってみましょう。"
+run = "grep -c ERROR app.log"
+after = "`3` と表示されました。`-c` は count(数える)の頭文字です。"
+
+[[try]]
+say = "逆に「その言葉を含まない行」を取り出すには `-v` を付けます。`grep -v INFO app.log` と打って、`INFO` 以外の行を見てみましょう。"
+run = "grep -v INFO app.log"
+after = "`INFO` の行が消えて、`ERROR` と `WARN` の行だけが残りました。いらない行を取り除くのに使えます。"
+
+[challenge]
+ask = "`server.log` から、`{{word}}` を含む行だけを表示してください。"
+solution = "grep {{word}} server.log"
+hints = [
+    "`grep` のあとに、探したい言葉、ファイルの名前の順に書きます。",
+    "`grep {{word}} server.log` と打ちます。",
+]
+done = "`grep` は、探す言葉がどこにあっても一致します。たとえば `grep 500` は、時刻や大きさの中の「500」も拾ってしまいます。「何列目の値か」まで指定して絞り込みたいときは、あとで覚える `awk` を使います。"
