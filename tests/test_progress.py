@@ -111,4 +111,4 @@ def test_oncall_mark_is_on_exactly_the_commands_needed_for_oncall(tmp_path):
     progress = Progress.load(tmp_path / "progress.json")
     text = "\n".join(row.plain for page in _menu_pages(cards, progress, DAY, 120, 40) for row in page)
     marked = {card.id for card in cards if re.search(rf". {re.escape(design.active.ONCALL)} {re.escape(card.command)} ", text)}
-    assert marked == set(load_links().ready)
+    assert marked == set(load_links().used)

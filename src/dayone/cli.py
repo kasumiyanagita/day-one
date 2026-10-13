@@ -92,8 +92,8 @@ def _mark(progress: Progress, card: Card, on: date) -> str:
 
 
 def _oncall_mark(card: Card) -> str:
-    """oncall を始める前に覚えておきたいコマンドに付ける印。それ以外は、同じ幅の空白。"""
-    return f"[d.oncall]{design.active.ONCALL}[/]" if card.id in load_links().ready else " "
+    """oncall で使うコマンドに付ける印。それ以外は、同じ幅の空白。"""
+    return f"[d.oncall]{design.active.ONCALL}[/]" if card.id in load_links().used else " "
 
 
 def _menu_blocks(cards: list[Card], progress: Progress, on: date) -> list[list[Text]]:
@@ -222,7 +222,7 @@ def _show_menu(
     # 次の一歩である oncall に向けて、土台になるカードをどこまで覚えたか
     # 一覧で oncall に必要なコマンドに付けている印を、ここにも付けて、この行と結び付ける
     oncall = f"[d.oncall]{design.active.ONCALL}[/]"
-    ready = load_links().ready
+    ready = load_links().used
     done = sum(1 for card_id in ready if progress.is_learned(card_id))
     if done == len(ready):
         footer.append("  [d.done]oncall への準備ができました。[/d.done][d.muted]障害対応ゲーム oncall で、覚えたコマンドを実戦に使えます。[/d.muted]")

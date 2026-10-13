@@ -1,7 +1,10 @@
 # 障害対応ゲーム oncall との対応。カードは id (ファイル名の番号を除いた部分) で指定する。
 
-# oncall を始める前に覚えておきたいカード
-ready = ["pwd", "ls", "cd", "cat", "head", "tail", "redirect", "pipe", "grep", "sort", "uniq", "awk"]
+# 一覧で印(◆)が付き、「oncall への準備」のバーで数えるのは、oncall で使うカードの全部。
+# 下の ready と、各ミッションの cards を合わせたものになる。
+
+# どのミッションでも使う、基本のカード
+ready = ["pwd", "ls", "cd", "cat", "head", "tail", "redirect", "pipe"]
 
 # oncall のミッションと、そこで使うカード
 [[missions]]
@@ -30,4 +33,4 @@ cards = ["tail", "pipe", "redirect", "cut", "comm", "join", "sort"]
 
 [[missions]]
 title = "同じ夜を繰り返さない"
-cards = ["wc", "test", "bash", "chmod", "awk"]
+cards = ["wc", "test", "bash", "chmod", "awk", "echo", "vim"]
