@@ -40,6 +40,9 @@ MENU_PROMPT = Text("> ", style="d.prompt.menu")
 # 表示の部分に残す、確定した入力の行。背景を付けて、どこからが新しい結果なのかを見分けやすくする
 ECHO_STYLE = "d.echo"
 
+# 終了(exit)を選べるのはトップページだけ。ほかの場所で打たれたときに出す
+EXIT_ONLY_AT_TOP = "exit はトップページで使えます。title と打つと、トップページに戻ります。"
+
 
 class Screen:
     def __init__(self, console: Console):

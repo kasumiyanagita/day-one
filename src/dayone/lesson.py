@@ -54,7 +54,7 @@ class Outcome:
     hints: int = 0
     misses: int = 0  # お題で正解になるまでに打った、正解でないコマンドの数(寄り道を含む)
     wrong: int = 0  # そのうち、答えようとして間違えた数
-    title: bool = False  # title と打って、トップページ(一覧)に戻ることを選んだ。False で cleared でもなければ、exit で終了を選んだ
+    title: bool = False  # 正解する前に、トップページ(一覧)に戻ることを選んだ(title と打った、または Ctrl-D)
 
     @property
     def clean(self) -> bool:
@@ -196,7 +196,8 @@ class Lesson:
                 self.shell.close()
             if self._to_title:
                 return Outcome(False, title=True)
-            return Outcome(cleared, self._hints, self._misses, self._wrong)
+            # 正解する前にシェルが閉じられた(Ctrl-D)ときも、トップページに戻る。終了を選べるのは、トップページだけ
+            return Outcome(cleared, self._hints, self._misses, self._wrong, title=not cleared)
         finally:
             if self.screen is not None:
                 self.screen.set_task(None)
@@ -246,7 +247,7 @@ class Lesson:
         self.console.print(f"\n{heading}")
         self._say(text)
         if self._in_challenge:
-            self.console.print(f"{INDENT}[d.muted]hint でヒント / title でトップページに戻る / exit で終了[/d.muted]")
+            self.console.print(f"{INDENT}[d.muted]hint でヒント / title でトップページに戻る[/d.muted]")
         self.console.print()
 
     def _refresh_task(self) -> None:
@@ -437,7 +438,6 @@ class Lesson:
             "[d.key]hint[/d.key] ヒント",
             "[d.key]card[/d.key] 説明",
             "[d.key]title[/d.key] トップページに戻る",
-            "[d.key]exit[/d.key] 終了",
             title=f"[d.command]{self.card.command}[/]" + (f" [d.review]復習[/]" if self.review else ""),
         )
 

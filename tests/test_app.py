@@ -71,11 +71,14 @@ def test_open_a_card_and_go_back_to_the_top_page(tmp_path, choice):
     assert "おつかれさまでした" in screen and code == 0
 
 
-def test_exit_in_a_card_quits_the_app(tmp_path):
-    screen, code = run_app(tmp_path, ["ls\r", "exit\r"])
+def test_exit_works_only_on_the_top_page(tmp_path):
+    """練習の途中、練習を終えたあと、チュートリアルで exit と打っても終了しない。title で戻ってから exit で終了する。"""
+    steps = ["pwd\r", "exit\r", "pwd\r", "pwd\r", "exit\r", "title\r", "tutorial\r", "exit\r", "title\r", "exit\r"]
+    screen, code = run_app(tmp_path, steps)
     assert "Traceback" not in screen
-    assert screen.count("で実行中") == 1  # トップページには戻らない
-    assert "おつかれさまでした" in screen and code == 0
+    assert "正解" in screen  # exit のあとも、練習は続いている
+    assert screen.count("exit はトップページで使えます") == 3
+    assert screen.count("おつかれさまでした") == 1 and code == 0
 
 
 def test_only_exit_quits_from_the_top_page(tmp_path):
@@ -93,10 +96,6 @@ def test_title_and_exit_after_clearing_a_card(tmp_path):
     assert "正解" in screen and "トップページに戻る" in screen
     assert screen.count("で実行中") == 2
     assert "おつかれさまでした" in screen and code == 0
-
-    # 「次へ」の画面の exit は、そのまま終了する
-    screen, code = run_app(tmp_path, ["pwd\r", "pwd\r", "pwd\r", "exit\r"])
-    assert screen.count("で実行中") == 1 and "おつかれさまでした" in screen and code == 0
 
 
 def test_falling_back_to_guard_mode_asks_first(tmp_path, monkeypatch):
@@ -143,9 +142,9 @@ def test_tutorial_shows_on_first_launch_only_and_can_be_reopened(tmp_path):
     assert screen.count("コマンド一覧") >= 2 and code == 0
 
 
-def test_exit_in_the_tutorial_quits_and_does_not_show_it_again(tmp_path):
-    screen, code = run_app(tmp_path, ["exit\r"], first_time=True)
-    assert "チュートリアル 1/4" in screen and "コマンド一覧" not in screen and code == 0
+def test_leaving_the_tutorial_early_does_not_show_it_again(tmp_path):
+    screen, code = run_app(tmp_path, ["title\r", "exit\r"], first_time=True)
+    assert "チュートリアル 1/4" in screen and "コマンド一覧" in screen and code == 0
     screen, code = run_app(tmp_path, ["exit\r"])
     assert "チュートリアル" not in screen.replace("tutorial", "") or "チュートリアル 1/4" not in screen
     assert "コマンド一覧" in screen and code == 0

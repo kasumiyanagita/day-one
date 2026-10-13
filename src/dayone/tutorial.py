@@ -12,7 +12,7 @@ from rich.text import Text
 
 from dayone import design, sandbox
 from dayone.prose import MAX_WIDTH, PANEL_CHROME, render_prose
-from dayone.screen import RESIZED, Screen
+from dayone.screen import EXIT_ONLY_AT_TOP, RESIZED, Screen
 
 WORD = "tutorial"  # トップページで打つと、チュートリアルを開く言葉
 NEXT, PREVIOUS = "next", "previous"
@@ -71,8 +71,8 @@ def _pages(mode: str) -> list[tuple[str, list[str | Text]]]:
                 "練習の途中で、次の言葉を打てます。",
                 "1. `hint` … ヒントを見る\n"
                 "2. `card` … コマンドの説明を、もう一度表示する\n"
-                "3. `title` … トップページに戻る\n"
-                "4. `exit` … アプリを終了する",
+                "3. `title` … トップページに戻る",
+                "アプリを終了するときは、トップページで `exit` と打ちます。",
                 "`less` や `vim` のように画面が切り替わるコマンドは、閉じ方が入力欄に出ます。",
                 f"このチュートリアルは、トップページで `{WORD}` と打つと、いつでも見られます。",
             ],
@@ -110,20 +110,23 @@ def _show(console: Console, title: str, blocks: list[str | Text], number: int, t
     )
 
 
-def run(screen: Screen, console: Console, mode: str) -> bool:
-    """チュートリアルを最初のページから見せる。終了(exit)を選んだら False、それ以外は True。"""
+def run(screen: Screen, console: Console, mode: str) -> None:
+    """チュートリアルを最初のページから見せる。見終えるか title で、トップページに戻る。"""
     pages = _pages(mode)
     index = 0
+    refused = False  # 直前に exit と打たれた(終了できない理由を、ページを描いたあとに出す)
     while True:
         screen.clear()
         title, blocks = pages[index]
         _show(console, title, blocks, index + 1, len(pages))
+        if refused:
+            console.print(f"[d.error]{EXIT_ONLY_AT_TOP}[/]")
+            refused = False
         last = index == len(pages) - 1
         screen.set_status(
             f"[d.key]Enter[/] {'はじめる' if last else '次へ'}",
             "[d.key]← →[/] ページ",
             "[d.key]title[/] トップページに戻る",
-            "[d.key]exit[/] 終了",
         )
         answer = screen.read_line(
             shortcuts=KEYS,
@@ -133,10 +136,11 @@ def run(screen: Screen, console: Console, mode: str) -> bool:
         if answer == RESIZED:  # 端末の大きさが変わった。同じページを、新しい大きさで描き直す
             continue
         answer = None if answer is None else answer.strip().lower()
-        if answer is None or answer == "exit":
-            return False
-        if answer == "title" or (answer == "" and last):
-            return True
+        if answer is None or answer == "title" or (answer == "" and last):
+            return
+        if answer == "exit":  # 終了は、トップページでだけ選べる
+            refused = True
+            continue
         if answer == PREVIOUS:
             index = max(0, index - 1)
         elif answer in {"", NEXT}:

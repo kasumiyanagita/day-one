@@ -21,14 +21,13 @@ from dayone.card import Card, load_cards
 from dayone.lesson import Lesson
 from dayone.links import load_links
 from dayone.progress import MAX_LEVEL, Progress, Recorded, default_path, today
-from dayone.screen import RESIZED, Screen
+from dayone.screen import EXIT_ONLY_AT_TOP, RESIZED, Screen
 
 MODE_LABELS = {
     sandbox.ISOLATED: "[d.mode.isolated]隔離モード[/]で実行中",
     sandbox.GUARD: "[d.mode.guard]簡易モード[/]で実行中",
 }
 
-QUIT = "quit"
 MENU = "menu"
 NEXT_PAGE = "next-page"
 PREVIOUS_PAGE = "previous-page"
@@ -363,22 +362,23 @@ def _choose(
         console.print(f"[d.error]{numbered}一覧にあるコマンド(ls など)を入力してください。[/d.error]")
 
 
-def _after_card(screen: Screen, upcoming: Plan | None) -> str:
-    """カードを終えたあとの行き先を尋ねる。"next" / "again" / MENU / QUIT を返す。"""
+def _after_card(screen: Screen, console: Console, upcoming: Plan | None) -> str:
+    """カードを終えたあとの行き先を尋ねる。"next" / "again" / MENU を返す。"""
     # 次の一手は、お題が出ていた場所(入力欄の下)に大きく出す
     lines = [f" [d.heading]{design.active.HEADING_MARK} 次へ[/]"]
     if upcoming:
         lines.append(f"   [d.key]Enter[/d.key] で{upcoming.label} へ進む")
-    lines.append("   [d.key]r[/d.key] もう一度   [d.key]title[/d.key] トップページに戻る   [d.key]exit[/d.key] 終了")
+    lines.append("   [d.key]r[/d.key] もう一度   [d.key]title[/d.key] トップページに戻る")
     screen.set_task(lambda width: Text.from_markup("\n".join(lines)))
     try:
         while True:
             answer = _ask(screen)
-            # どの場面でも、title はトップページ(一覧)に戻る、exit はアプリを終了する
-            if answer is None or answer == "exit":
-                return QUIT
-            if answer == "title" or (not answer and not upcoming):
+            # どの場面でも、title はトップページ(一覧)に戻る。終了(exit)を選べるのは、トップページだけ
+            if answer is None or answer == "title" or (not answer and not upcoming):
                 return MENU
+            if answer == "exit":
+                console.print(f"[d.error]{EXIT_ONLY_AT_TOP}[/]")
+                continue
             if not answer:
                 return "next"
             if answer in {"r", "retry"}:
@@ -488,18 +488,14 @@ def main(argv: list[str] | None = None) -> int:
         # 初めて起動したときだけ、最初にチュートリアルを見せる。途中でやめても、見せたものとして記録する
         if not progress.tutorial_seen:
             progress.mark_tutorial_seen()
-            if not tutorial.run(screen, console, mode):
-                console.print("おつかれさまでした。")
-                return 0
+            tutorial.run(screen, console, mode)
         page = 0
         while True:
             screen.clear()  # カードから戻ったときも、一覧だけを表示する
             page, pages = _show_menu(console, screen.rows, cards, progress, mode, today(), page)
             plan = _choose(screen, console, cards, _recommend(cards, progress, today()), paged=pages > 1)
             if plan == TUTORIAL:
-                if not tutorial.run(screen, console, mode):
-                    console.print("おつかれさまでした。")
-                    return 0
+                tutorial.run(screen, console, mode)
                 continue
             if plan == REDRAW:
                 continue
@@ -519,18 +515,13 @@ def main(argv: list[str] | None = None) -> int:
                 ).play()
                 if outcome.title:  # カードの途中で title と打った。トップページ(一覧)に戻る
                     break
-                if not outcome.cleared:  # カードの途中で exit と打った。アプリを終了する
-                    plan = None
-                    break
                 _show_recorded(console, plan.card, progress.record(plan.card.id, clean=outcome.clean, on=today()))
                 console.print()
                 upcoming = _recommend(cards, progress, today(), after=plan.card)
-                choice = _after_card(screen, upcoming)
+                choice = _after_card(screen, console, upcoming)
                 if choice == MENU:
                     break
-                if choice == QUIT:
-                    plan = None
-                elif choice == "next":
+                if choice == "next":
                     plan = upcoming
             if plan is None:
                 console.print("おつかれさまでした。")

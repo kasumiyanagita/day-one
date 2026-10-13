@@ -43,6 +43,15 @@ unset -f command_not_found_handle
 hint() { :; }
 card() { :; }
 title() { :; }
+# 終了(exit)はトップページでだけ使える。ここでは、シェルを閉じずに案内を出す
+# (スクリプトや ( ) の中の exit は、ふつうに働く)
+exit() {
+    if [ "$BASH_SUBSHELL" -eq 0 ]; then
+        echo "exit はトップページで使えます。title と打つと、トップページに戻ります。"
+    else
+        builtin exit "$@"
+    fi
+}
 
 if [ "$DAYONE_MODE" = guard ]; then
     . "$DAYONE_RUN/guard.bash"

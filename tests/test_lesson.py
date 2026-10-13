@@ -71,9 +71,12 @@ def test_hidden_command_is_not_in_history(mode):
     assert "history -d" not in played.terminal
 
 
-def test_exit_leaves_the_card(mode):
-    played = play(CARDS["cat"], ["exit", "cat memo.txt"], mode)
-    assert not played.outcome.cleared
+def test_exit_does_not_leave_the_card(mode):
+    """終了(exit)を選べるのはトップページだけ。練習の途中では、案内を出して続ける。"""
+    card = CARDS["cat"]
+    played = play(card, ["exit", *walkthrough(card)], mode)
+    assert "exit はトップページで使えます" in played.terminal
+    assert played.outcome.cleared
 
 
 def test_failed_command_does_not_count_as_trying(mode):
